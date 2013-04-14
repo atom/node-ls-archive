@@ -17,8 +17,7 @@ module.exports =
     zipStream.on 'entry', (entry) ->
       paths.push(entry.path)
       entry.autodrain()
-    zipStream.on 'close', ->
-      callback(paths)
+    zipStream.on 'close', -> callback(paths)
 
   listGzip: (archivePath, callback) ->
     if path.extname(path.basename(archivePath, '.gz')) isnt '.tar'
