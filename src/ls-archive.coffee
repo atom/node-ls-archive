@@ -38,5 +38,5 @@ module.exports =
     tar = require 'tar'
     paths = []
     tarStream = inputStream.pipe(tar.Parse())
-    tarStream.on 'entry', (e) -> paths.push(e.props.path)
+    tarStream.on 'entry', (entry) -> paths.push(entry.props.path)
     tarStream.on 'end', -> callback(paths)
