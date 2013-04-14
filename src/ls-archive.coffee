@@ -7,7 +7,6 @@ module.exports =
       when '.tar' then @listTar(archivePath, callback)
       when '.gz' then @listGzip(archivePath, callback)
       when '.zip' then @listZip(archivePath, callback)
-
       else callback([])
 
   listZip: (archivePath, callback) ->
