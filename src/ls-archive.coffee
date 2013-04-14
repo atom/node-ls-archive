@@ -6,8 +6,20 @@ module.exports =
     switch path.extname(archivePath)
       when '.tar' then @listTar(archivePath, callback)
       when '.gz' then @listGzip(archivePath, callback)
+      when '.zip' then @listZip(archivePath, callback)
 
       else callback([])
+
+  listZip: (archivePath, callback) ->
+    unzip = require 'unzip'
+    paths = []
+    fileStream = fs.createReadStream(archivePath)
+    zipStream = fileStream.pipe(unzip.Parse())
+    zipStream.on 'entry', (entry) ->
+      paths.push(entry.path)
+      entry.autodrain()
+    zipStream.on 'close', ->
+      callback(paths)
 
   listGzip: (archivePath, callback) ->
     if path.extname(path.basename(archivePath, '.gz')) isnt '.tar'

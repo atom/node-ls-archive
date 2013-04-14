@@ -35,6 +35,7 @@
     "test": "jasmine-node --coffee spec/"
   },
   "dependencies": {
-    "tar": "~0.1.17"
+    "tar": "~0.1.17",
+    "unzip": "~0.1.7"
   }
 }
