@@ -53,7 +53,7 @@ readFileFromZip = (archivePath, filePath, callback) ->
 
 readFileFromGzip = (archivePath, filePath, callback) ->
   if path.extname(path.basename(archivePath, '.gz')) isnt '.tar'
-    callback(null, '')
+    callback(new Error("'#{path.extname(filePath)}' files are not supported"))
     return
 
   filePathFound = false

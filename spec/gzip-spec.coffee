@@ -58,3 +58,12 @@ describe "gzipped tar files", ->
         archive.readFile(archivePath, 'invalid.txt', callback)
         waitsFor -> pathError?
         runs -> expect(pathError.message).not.toBeNull()
+
+    describe "when the second to last extension isn't .tar", ->
+      it "calls back with an error", ->
+        archivePath = path.join(fixturesRoot, 'invalid.txt.gz')
+        pathError = null
+        callback = (error, contents) -> pathError = error
+        archive.readFile(archivePath, 'invalid.txt', callback)
+        waitsFor -> pathError?
+        runs -> expect(pathError.message).not.toBeNull()
