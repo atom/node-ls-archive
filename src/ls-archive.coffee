@@ -13,8 +13,8 @@ listZip = (archivePath, callback) ->
   paths = []
   fileStream = fs.createReadStream(archivePath)
   fileStream.on 'error', (error) -> callback(error)
-  fileStream.on 'end', -> callback(null, paths)
   zipStream = fileStream.pipe(unzip.Parse())
+  zipStream.on 'close', -> callback(null, paths)
   zipStream.on 'error', (error) -> callback(error)
   zipStream.on 'entry', (entry) ->
     paths.push(entry.path)
@@ -47,9 +47,9 @@ readTarStream = (inputStream, callback) ->
 readFileFromZip = (archivePath, filePath, callback) ->
   fileStream = fs.createReadStream(archivePath)
   fileStream.on 'error', (error) -> callback(error)
-  fileStream.on 'end', ->
-    callback(new Error("#{filePath} does not exist in the archive: #{archivePath}"))
   zipStream = fileStream.pipe(require('unzip').Parse())
+  zipStream.on 'close', ->
+    callback(new Error("#{filePath} does not exist in the archive: #{archivePath}"))
   zipStream.on 'error', (error) -> callback(error)
   zipStream.on 'entry', (entry) ->
     if filePath is entry.path
