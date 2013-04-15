@@ -48,6 +48,25 @@ module.exports =
     switch path.extname(archivePath)
       when '.tar' then @readFileFromTar(archivePath, filePath, callback)
       when '.gz' then @readFileFromGzip(archivePath, filePath, callback)
+      when '.zip' then @readFileFromZip(archivePath, filePath, callback)
+
+  readFileFromZip: (archivePath, filePath, callback) ->
+    unzip = require 'unzip'
+    fileStream = @createReadStream(archivePath, callback)
+    filePathFound = false
+    zipStream = fileStream.pipe(unzip.Parse())
+    zipStream.on 'entry', (entry) ->
+      if filePath is entry.path
+        contents = []
+        entry.on 'data', (data) -> contents.push(data)
+        entry.on 'end', ->
+          filePathFound = true
+          callback(null, Buffer.concat(contents).toString())
+      else
+        entry.autodrain()
+    zipStream.on 'close', ->
+      unless filePathFound
+        callback(new Error("#{filePath} does not exist in the archive: #{archivePath}"))
 
   readFileFromGzip: (archivePath, filePath, callback) ->
     if path.extname(path.basename(archivePath, '.gz')) isnt '.tar'
