@@ -31,17 +31,16 @@ readTarStream = (inputStream, callback) ->
   tarStream.on 'entry', (entry) -> paths.push(entry.props.path)
   tarStream.on 'end', -> callback(paths)
 
-createReadStream = (archivePath, callback) ->
-  fileStream = fs.createReadStream(archivePath)
-  fileStream.on 'error', (error) -> callback(error)
-  fileStream
-
 readFileFromZip = (archivePath, filePath, callback) ->
   unzip = require 'unzip'
-  fileStream = createReadStream(archivePath, callback)
   filePathFound = false
+  fileStream = fs.createReadStream(archivePath)
+  fileStream.on 'error', (error) -> callback(error) unless filePathFound
+  fileStream.on 'end', ->
+    unless filePathFound
+      callback(new Error("#{filePath} does not exist in the archive: #{archivePath}"))
   zipStream = fileStream.pipe(unzip.Parse())
-  zipStream.on 'error', (error) -> callback(error)
+  zipStream.on 'error', (error) -> callback(error) unless filePathFound
   zipStream.on 'entry', (entry) ->
     if not filePathFound and filePath is entry.path
       contents = []
@@ -51,31 +50,50 @@ readFileFromZip = (archivePath, filePath, callback) ->
         callback(null, Buffer.concat(contents).toString())
     else
       entry.autodrain()
-  zipStream.on 'close', ->
-    unless filePathFound
-      callback(new Error("#{filePath} does not exist in the archive: #{archivePath}"))
 
 readFileFromGzip = (archivePath, filePath, callback) ->
   if path.extname(path.basename(archivePath, '.gz')) isnt '.tar'
     callback(null, '')
     return
 
+  filePathFound = false
+  fileStream = fs.createReadStream(archivePath)
+  fileStream.on 'error', (error) -> callback(error) unless filePathFound
+  fileStream.on 'end', ->
+    unless filePathFound
+      callback(new Error("#{filePath} does not exist in the archive: #{archivePath}"))
   zlib = require 'zlib'
-  fileStream = createReadStream(archivePath, callback)
   gzipStream = fileStream.pipe(zlib.createGunzip())
-  gzipStream.on 'error', (error) -> callback(error)
-  readFileFromTarStream(gzipStream, archivePath, filePath, callback)
+  gzipStream.on 'error', (error) -> callback(error) unless filePathFound
+  fileCallback = (error, buffer) ->
+    if error?
+      callback(error)
+    else
+      filePathFound = true
+      callback(null, buffer.toString())
+  readFileFromTarStream(gzipStream, filePath, fileCallback)
 
 readFileFromTar = (archivePath, filePath, callback) ->
-  fileStream = createReadStream(archivePath, callback)
-  readFileFromTarStream(fileStream, archivePath, filePath, callback)
+  filePathFound = false
+  fileStream = fs.createReadStream(archivePath, callback)
+  fileStream.on 'error', (error) -> callback(error) unless filePathFound
+  fileStream.on 'end', ->
+    unless filePathFound
+      callback(new Error("#{filePath} does not exist in the archive: #{archivePath}"))
+  fileCallback = (error, buffer) ->
+    if error?
+      callback(error)
+    else
+      filePathFound = true
+      callback(null, buffer.toString())
+  readFileFromTarStream(fileStream, filePath, fileCallback)
 
-readFileFromTarStream = (inputStream, archivePath, filePath, callback) ->
+readFileFromTarStream = (inputStream, filePath, callback) ->
   tar = require 'tar'
   tarStream = inputStream.pipe(tar.Parse())
 
   filePathFound = false
-  tarStream.on 'error', (error) -> callback(error)
+  tarStream.on 'error', (error) -> callback(error) unless filePathFound
   tarStream.on 'entry', (entry) ->
     return if filePathFound
     return unless filePath is entry.props.path
@@ -85,9 +103,6 @@ readFileFromTarStream = (inputStream, archivePath, filePath, callback) ->
     entry.on 'end', ->
       filePathFound = true
       callback(null, Buffer.concat(contents).toString())
-  tarStream.on 'end', ->
-    unless filePathFound
-      callback(new Error("#{filePath} does not exist in the archive: #{archivePath}"))
 
 module.exports =
   list: (archivePath, callback) ->
