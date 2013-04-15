@@ -41,6 +41,7 @@ readFileFromZip = (archivePath, filePath, callback) ->
   fileStream = createReadStream(archivePath, callback)
   filePathFound = false
   zipStream = fileStream.pipe(unzip.Parse())
+  zipStream.on 'error', (error) -> callback(error)
   zipStream.on 'entry', (entry) ->
     if not filePathFound and filePath is entry.path
       contents = []
@@ -62,6 +63,7 @@ readFileFromGzip = (archivePath, filePath, callback) ->
   zlib = require 'zlib'
   fileStream = createReadStream(archivePath, callback)
   gzipStream = fileStream.pipe(zlib.createGunzip())
+  gzipStream.on 'error', (error) -> callback(error)
   readFileFromTarStream(gzipStream, archivePath, filePath, callback)
 
 readFileFromTar = (archivePath, filePath, callback) ->
@@ -73,6 +75,7 @@ readFileFromTarStream = (inputStream, archivePath, filePath, callback) ->
   tarStream = inputStream.pipe(tar.Parse())
 
   filePathFound = false
+  tarStream.on 'error', (error) -> callback(error)
   tarStream.on 'entry', (entry) ->
     return if filePathFound
     return unless filePath is entry.props.path
