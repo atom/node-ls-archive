@@ -38,20 +38,18 @@ listTar = (archivePath, callback) ->
   readTarStream(fileStream, callback)
 
 readTarStream = (inputStream, callback) ->
-  tar = require 'tar'
   paths = []
-  tarStream = inputStream.pipe(tar.Parse())
+  tarStream = inputStream.pipe(require('tar').Parse())
   tarStream.on 'error', (error) -> callback(error)
   tarStream.on 'entry', (entry) -> paths.push(entry.props.path)
   tarStream.on 'end', -> callback(null, paths)
 
 readFileFromZip = (archivePath, filePath, callback) ->
-  unzip = require 'unzip'
   fileStream = fs.createReadStream(archivePath)
   fileStream.on 'error', (error) -> callback(error)
   fileStream.on 'end', ->
     callback(new Error("#{filePath} does not exist in the archive: #{archivePath}"))
-  zipStream = fileStream.pipe(unzip.Parse())
+  zipStream = fileStream.pipe(require('unzip').Parse())
   zipStream.on 'error', (error) -> callback(error)
   zipStream.on 'entry', (entry) ->
     if filePath is entry.path
@@ -68,8 +66,7 @@ readFileFromGzip = (archivePath, filePath, callback) ->
 
   fileStream = fs.createReadStream(archivePath)
   fileStream.on 'error', (error) -> callback(error)
-  zlib = require 'zlib'
-  gzipStream = fileStream.pipe(zlib.createGunzip())
+  gzipStream = fileStream.pipe(require('zlib').createGunzip())
   gzipStream.on 'error', (error) -> callback(error)
   gzipStream.on 'end', ->
     callback(new Error("#{filePath} does not exist in the archive: #{archivePath}"))
