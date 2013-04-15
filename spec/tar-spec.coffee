@@ -21,3 +21,31 @@ describe "tar files", ->
       archive.list(path.join(fixturesRoot, 'one-folder.tar'), callback)
       waitsFor -> tarPaths?
       runs -> expect(tarPaths).toEqual ['folder/']
+
+  describe ".readFile()", ->
+    describe "when the path exists in the archive", ->
+      it "calls back with the contents of the given path", ->
+        archivePath = path.join(fixturesRoot, 'one-file.tar')
+        pathContents = null
+        callback = (error, contents) -> pathContents = contents
+        archive.readFile(archivePath, 'file.txt', callback)
+        waitsFor -> pathContents?
+        runs -> expect(pathContents).toBe 'hello\n'
+
+    describe "when the path does not exist in the archive", ->
+      it "calls back with an error", ->
+        archivePath = path.join(fixturesRoot, 'one-file.tar')
+        pathError = null
+        callback = (error, contents) -> pathError = error
+        archive.readFile(archivePath, 'not-a-file.txt', callback)
+        waitsFor -> pathError?
+        runs -> expect(pathError.message).not.toBeNull()
+
+    describe "when the archive path does not exist", ->
+      it "calls back with an error", ->
+        archivePath = path.join(fixturesRoot, 'not-a-file.tar')
+        pathError = null
+        callback = (error, contents) -> pathError = error
+        archive.readFile(archivePath, 'not-a-file.txt', callback)
+        waitsFor -> pathError?
+        runs -> expect(pathError.message).not.toBeNull()

@@ -38,3 +38,29 @@ module.exports =
     tarStream = inputStream.pipe(tar.Parse())
     tarStream.on 'entry', (entry) -> paths.push(entry.props.path)
     tarStream.on 'end', -> callback(paths)
+
+  readFile: (archivePath, filePath, callback) ->
+    switch path.extname(archivePath)
+      when '.tar' then @readFileFromTar(archivePath, filePath, callback)
+
+  readFileFromTar: (archivePath, filePath, callback) ->
+    fileStream = fs.createReadStream(archivePath)
+    fileStream.on 'error', (error) -> callback(error)
+
+    tar = require 'tar'
+    tarStream = fileStream.pipe(tar.Parse())
+
+    filePathFound = false
+    tarStream.on 'entry', (entry) ->
+      return unless filePath is entry.props.path
+
+      contents = new Buffer(entry.props.size)
+      position = 0
+      entry.on 'data', (data) ->
+        position += data.copy(contents, 0, position)
+      entry.on 'end', ->
+        filePathFound = true
+        callback(null, contents.toString())
+    tarStream.on 'end', ->
+      unless filePathFound
+        callback(new Error("#{filePath} does not exist in the archive: #{archivePath}"))
