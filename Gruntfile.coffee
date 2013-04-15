@@ -12,7 +12,7 @@ module.exports = (grunt) ->
 
     shell:
       test:
-        command: 'jasmine-node --coffee spec/'
+        command: 'jasmine-node --coffee --captureExceptions spec/'
         options:
           stdout: true
           stderr: true

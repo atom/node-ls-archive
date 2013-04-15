@@ -32,7 +32,7 @@
   },
   "scripts": {
     "prepublish": "grunt coffee",
-    "test": "jasmine-node --coffee spec/"
+    "test": "jasmine-node --coffee --captureExceptions spec/"
   },
   "dependencies": {
     "tar": "~0.1.17",
