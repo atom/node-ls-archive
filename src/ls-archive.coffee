@@ -49,14 +49,14 @@ listGzip = (archivePath, callback) ->
   fileStream.on 'error', callback
   gzipStream = fileStream.pipe(zlib.createGunzip())
   gzipStream.on 'error', callback
-  readTarStream(gzipStream, callback)
+  listTarStream(gzipStream, callback)
 
 listTar = (archivePath, callback) ->
   fileStream = fs.createReadStream(archivePath)
   fileStream.on 'error', callback
-  readTarStream(fileStream, callback)
+  listTarStream(fileStream, callback)
 
-readTarStream = (inputStream, callback) ->
+listTarStream = (inputStream, callback) ->
   paths = []
   tarStream = inputStream.pipe(require('tar').Parse())
   tarStream.on 'error', callback
