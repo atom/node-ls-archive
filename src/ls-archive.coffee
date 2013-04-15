@@ -55,6 +55,10 @@ readFileFromZip = (archivePath, filePath, callback) ->
   zipStream.on 'error', callback
   zipStream.on 'entry', (entry) ->
     if filePath is entry.path
+      if entry.type isnt 'File'
+        callback("#{filePath} is a folder in the archive: #{archivePath}")
+        return
+
       contents = []
       entry.on 'data', (data) -> contents.push(data)
       entry.on 'end', -> callback(null, Buffer.concat(contents).toString())
