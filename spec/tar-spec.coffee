@@ -14,14 +14,24 @@ describe "tar files", ->
         callback = (error, paths) -> tarPaths = paths
         archive.list(path.join(fixturesRoot, 'one-file.tar'), callback)
         waitsFor -> tarPaths?
-        runs -> expect(tarPaths).toEqual ['file.txt']
+        runs ->
+          expect(tarPaths.length).toBe 1
+          expect(tarPaths[0].path).toBe 'file.txt'
+          expect(tarPaths[0].isDirectory()).toBe false
+          expect(tarPaths[0].isFile()).toBe true
+          expect(tarPaths[0].isSymbolicLink()).toBe false
 
       it "returns folders in the tar archive", ->
         tarPaths = null
         callback = (error, paths) -> tarPaths = paths
         archive.list(path.join(fixturesRoot, 'one-folder.tar'), callback)
         waitsFor -> tarPaths?
-        runs -> expect(tarPaths).toEqual ['folder/']
+        runs ->
+          expect(tarPaths.length).toBe 1
+          expect(tarPaths[0].path).toBe 'folder'
+          expect(tarPaths[0].isDirectory()).toBe true
+          expect(tarPaths[0].isFile()).toBe false
+          expect(tarPaths[0].isSymbolicLink()).toBe false
 
     describe "when the archive path does not exist", ->
       it "calls back with an error", ->

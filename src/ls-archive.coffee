@@ -2,6 +2,13 @@ fs = require 'fs'
 path = require 'path'
 util = require 'util'
 
+class ArchiveEntry
+  constructor: (@path, @type) ->
+
+  isFile: -> @type is 0
+  isDirectory: -> @type is 5
+  isSymbolicLink: -> @type is 2
+
 wrapCallback = (callback) ->
   called = false
   (error, data) ->
@@ -19,7 +26,15 @@ listZip = (archivePath, callback) ->
   zipStream.on 'close', -> callback(null, paths)
   zipStream.on 'error', callback
   zipStream.on 'entry', (entry) ->
-    paths.push(entry.path)
+    if entry.path[-1..] is '/'
+      entryPath = entry.path[0...-1]
+    else
+      entryPath = entry.path
+    if entry.type is 'Directory'
+      entryType = 5
+    else
+      entryType = 0
+    paths.push(new ArchiveEntry(entryPath, entryType))
     entry.autodrain()
 
 listGzip = (archivePath, callback) ->
@@ -43,7 +58,13 @@ readTarStream = (inputStream, callback) ->
   paths = []
   tarStream = inputStream.pipe(require('tar').Parse())
   tarStream.on 'error', callback
-  tarStream.on 'entry', (entry) -> paths.push(entry.props.path)
+  tarStream.on 'entry', (entry) ->
+    if entry.props.path[-1..] is '/'
+      entryPath = entry.props.path[0...-1]
+    else
+      entryPath = entry.props.path
+    entryType = parseInt(entry.props.type)
+    paths.push(new ArchiveEntry(entryPath, entryType))
   tarStream.on 'end', -> callback(null, paths)
 
 readFileFromZip = (archivePath, filePath, callback) ->

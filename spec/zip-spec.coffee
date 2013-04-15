@@ -14,14 +14,24 @@ describe "zip file listing", ->
         callback = (error, paths) -> zipPaths = paths
         archive.list(path.join(fixturesRoot, 'one-file.zip'), callback)
         waitsFor -> zipPaths?
-        runs -> expect(zipPaths).toEqual ['file.txt']
+        runs ->
+          expect(zipPaths.length).toBe 1
+          expect(zipPaths[0].path).toBe 'file.txt'
+          expect(zipPaths[0].isDirectory()).toBe false
+          expect(zipPaths[0].isFile()).toBe true
+          expect(zipPaths[0].isSymbolicLink()).toBe false
 
       it "returns folders in the zip archive", ->
         zipPaths = null
         callback = (error, paths) -> zipPaths = paths
         archive.list(path.join(fixturesRoot, 'one-folder.zip'), callback)
         waitsFor -> zipPaths?
-        runs -> expect(zipPaths).toEqual ['folder/']
+        runs ->
+          expect(zipPaths.length).toBe 1
+          expect(zipPaths[0].path).toBe 'folder'
+          expect(zipPaths[0].isDirectory()).toBe true
+          expect(zipPaths[0].isFile()).toBe false
+          expect(zipPaths[0].isSymbolicLink()).toBe false
 
     describe "when the archive path does not exist", ->
       it "calls back with an error", ->

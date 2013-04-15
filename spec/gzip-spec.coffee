@@ -14,14 +14,24 @@ describe "gzipped tar files", ->
         callback = (error, paths) -> gzipPaths = paths
         archive.list(path.join(fixturesRoot, 'one-file.tar.gz'), callback)
         waitsFor -> gzipPaths?
-        runs -> expect(gzipPaths).toEqual ['file.txt']
+        runs ->
+          expect(gzipPaths.length).toBe 1
+          expect(gzipPaths[0].path).toBe 'file.txt'
+          expect(gzipPaths[0].isDirectory()).toBe false
+          expect(gzipPaths[0].isFile()).toBe true
+          expect(gzipPaths[0].isSymbolicLink()).toBe false
 
       it "returns folders in the gzipped tar archive", ->
         gzipPaths = null
         callback = (error, paths) -> gzipPaths = paths
         archive.list(path.join(fixturesRoot, 'one-folder.tar.gz'), callback)
         waitsFor -> gzipPaths?
-        runs -> expect(gzipPaths).toEqual ['folder/']
+        runs ->
+          expect(gzipPaths.length).toBe 1
+          expect(gzipPaths[0].path).toBe 'folder'
+          expect(gzipPaths[0].isDirectory()).toBe true
+          expect(gzipPaths[0].isFile()).toBe false
+          expect(gzipPaths[0].isSymbolicLink()).toBe false
 
     describe "when the archive path does not exist", ->
       it "calls back with an error", ->
