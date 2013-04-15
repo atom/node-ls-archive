@@ -8,19 +8,29 @@ describe "zip file listing", ->
     fixturesRoot = path.join(__dirname, 'fixtures')
 
   describe ".list()", ->
-    it "returns files in the zip archive", ->
-      zipPaths = null
-      callback = (paths) -> zipPaths = paths
-      archive.list(path.join(fixturesRoot, 'one-file.zip'), callback)
-      waitsFor -> zipPaths?
-      runs -> expect(zipPaths).toEqual ['file.txt']
+    describe "when the archive file exists", ->
+      it "returns files in the zip archive", ->
+        zipPaths = null
+        callback = (paths) -> zipPaths = paths
+        archive.list(path.join(fixturesRoot, 'one-file.zip'), callback)
+        waitsFor -> zipPaths?
+        runs -> expect(zipPaths).toEqual ['file.txt']
 
-    it "returns folders in the zip archive", ->
-      zipPaths = null
-      callback = (paths) -> zipPaths = paths
-      archive.list(path.join(fixturesRoot, 'one-folder.zip'), callback)
-      waitsFor -> zipPaths?
-      runs -> expect(zipPaths).toEqual ['folder/']
+      it "returns folders in the zip archive", ->
+        zipPaths = null
+        callback = (paths) -> zipPaths = paths
+        archive.list(path.join(fixturesRoot, 'one-folder.zip'), callback)
+        waitsFor -> zipPaths?
+        runs -> expect(zipPaths).toEqual ['folder/']
+
+    describe "when the archive path does not exist", ->
+      it "calls back with an error", ->
+        archivePath = path.join(fixturesRoot, 'not-a-file.zip')
+        pathError = null
+        callback = (error, contents) -> pathError = error
+        archive.list(archivePath, callback)
+        waitsFor -> pathError?
+        runs -> expect(pathError.message).not.toBeNull()
 
   describe ".readFile()", ->
     describe "when the path exists in the archive", ->

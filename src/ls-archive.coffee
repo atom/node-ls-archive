@@ -5,6 +5,7 @@ listZip = (archivePath, callback) ->
   unzip = require 'unzip'
   paths = []
   fileStream = fs.createReadStream(archivePath)
+  fileStream.on 'error', (error) -> callback(error)
   fileStream.on 'end', -> callback(paths)
   zipStream = fileStream.pipe(unzip.Parse())
   zipStream.on 'entry', (entry) ->
@@ -17,11 +18,14 @@ listGzip = (archivePath, callback) ->
     return
 
   zlib = require 'zlib'
-  gzipStream = fs.createReadStream(archivePath).pipe(zlib.createGunzip())
+  fileStream = fs.createReadStream(archivePath)
+  fileStream.on 'error', (error) -> callback(error)
+  gzipStream = fileStream.pipe(zlib.createGunzip())
   readTarStream(gzipStream, callback)
 
 listTar = (archivePath, callback) ->
   fileStream = fs.createReadStream(archivePath)
+  fileStream.on 'error', (error) -> callback(error)
   readTarStream(fileStream, callback)
 
 readTarStream = (inputStream, callback) ->

@@ -8,19 +8,29 @@ describe "gzipped tar files", ->
     fixturesRoot = path.join(__dirname, 'fixtures')
 
   describe ".list()", ->
-    it "returns files in the gzipped tar archive", ->
-      gzipPaths = null
-      callback = (paths) -> gzipPaths = paths
-      archive.list(path.join(fixturesRoot, 'one-file.tar.gz'), callback)
-      waitsFor -> gzipPaths?
-      runs -> expect(gzipPaths).toEqual ['file.txt']
+    describe "when the archive file exists", ->
+      it "returns files in the gzipped tar archive", ->
+        gzipPaths = null
+        callback = (paths) -> gzipPaths = paths
+        archive.list(path.join(fixturesRoot, 'one-file.tar.gz'), callback)
+        waitsFor -> gzipPaths?
+        runs -> expect(gzipPaths).toEqual ['file.txt']
 
-    it "returns folders in the gzipped tar archive", ->
-      gzipPaths = null
-      callback = (paths) -> gzipPaths = paths
-      archive.list(path.join(fixturesRoot, 'one-folder.tar.gz'), callback)
-      waitsFor -> gzipPaths?
-      runs -> expect(gzipPaths).toEqual ['folder/']
+      it "returns folders in the gzipped tar archive", ->
+        gzipPaths = null
+        callback = (paths) -> gzipPaths = paths
+        archive.list(path.join(fixturesRoot, 'one-folder.tar.gz'), callback)
+        waitsFor -> gzipPaths?
+        runs -> expect(gzipPaths).toEqual ['folder/']
+
+    describe "when the archive path does not exist", ->
+      it "calls back with an error", ->
+        archivePath = path.join(fixturesRoot, 'not-a-file.tar.gz')
+        pathError = null
+        callback = (error, contents) -> pathError = error
+        archive.list(archivePath, callback)
+        waitsFor -> pathError?
+        runs -> expect(pathError.message).not.toBeNull()
 
   describe ".readFile()", ->
     describe "when the path exists in the archive", ->
