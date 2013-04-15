@@ -63,7 +63,7 @@ readFileFromZip = (archivePath, filePath, callback) ->
 
 readFileFromGzip = (archivePath, filePath, callback) ->
   if path.extname(path.basename(archivePath, '.gz')) isnt '.tar'
-    callback("'#{path.extname(filePath)}' files are not supported")
+    callback("'#{path.extname(archivePath)}' files are not supported")
     return
 
   fileStream = fs.createReadStream(archivePath)
