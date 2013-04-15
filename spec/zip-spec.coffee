@@ -30,7 +30,7 @@ describe "zip file listing", ->
         callback = (error) -> pathError = error
         archive.list(archivePath, callback)
         waitsFor -> pathError?
-        runs -> expect(pathError.message).not.toBeNull()
+        runs -> expect(pathError.message.length).toBeGreaterThan 0
 
     describe "when the archive path isn't a valid zip file", ->
       it "calls back with an error", ->
@@ -39,7 +39,7 @@ describe "zip file listing", ->
         callback = (error) -> pathError = error
         archive.list(archivePath, callback)
         waitsFor -> pathError?
-        runs -> expect(pathError.message).not.toBeNull()
+        runs -> expect(pathError.message.length).toBeGreaterThan 0
 
   describe ".readFile()", ->
     describe "when the path exists in the archive", ->
@@ -58,7 +58,7 @@ describe "zip file listing", ->
         callback = (error, contents) -> pathError = error
         archive.readFile(archivePath, 'not-a-file.txt', callback)
         waitsFor -> pathError?
-        runs -> expect(pathError.message).not.toBeNull()
+        runs -> expect(pathError.message.length).toBeGreaterThan 0
 
     describe "when the archive path does not exist", ->
       it "calls back with an error", ->
@@ -67,7 +67,7 @@ describe "zip file listing", ->
         callback = (error, contents) -> pathError = error
         archive.readFile(archivePath, 'not-a-file.txt', callback)
         waitsFor -> pathError?
-        runs -> expect(pathError.message).not.toBeNull()
+        runs -> expect(pathError.message.length).toBeGreaterThan 0
 
     describe "when the archive path isn't a valid zip file", ->
       it "calls back with an error", ->
@@ -76,4 +76,4 @@ describe "zip file listing", ->
         callback = (error, contents) -> pathError = error
         archive.readFile(archivePath, 'invalid.txt', callback)
         waitsFor -> pathError?
-        runs -> expect(pathError.message).not.toBeNull()
+        runs -> expect(pathError.message.length).toBeGreaterThan 0

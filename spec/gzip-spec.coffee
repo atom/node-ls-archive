@@ -30,7 +30,7 @@ describe "gzipped tar files", ->
         callback = (error) -> pathError = error
         archive.list(archivePath, callback)
         waitsFor -> pathError?
-        runs -> expect(pathError.message).not.toBeNull()
+        runs -> expect(pathError.message.length).toBeGreaterThan 0
 
     describe "when the archive path isn't a valid gzipped tar file", ->
       it "calls back with an error", ->
@@ -39,7 +39,7 @@ describe "gzipped tar files", ->
         callback = (error) -> pathError = error
         archive.list(archivePath, callback)
         waitsFor -> pathError?
-        runs -> expect(pathError.message).not.toBeNull()
+        runs -> expect(pathError.message.length).toBeGreaterThan 0
 
   describe ".readFile()", ->
     describe "when the path exists in the archive", ->
@@ -58,7 +58,7 @@ describe "gzipped tar files", ->
         callback = (error, contents) -> pathError = error
         archive.readFile(archivePath, 'not-a-file.txt', callback)
         waitsFor -> pathError?
-        runs -> expect(pathError.message).not.toBeNull()
+        runs -> expect(pathError.message.length).toBeGreaterThan 0
 
     describe "when the archive path does not exist", ->
       it "calls back with an error", ->
@@ -67,6 +67,7 @@ describe "gzipped tar files", ->
         callback = (error, contents) -> pathError = error
         archive.readFile(archivePath, 'not-a-file.txt', callback)
         waitsFor -> pathError?
+        runs -> expect(pathError.message.length).toBeGreaterThan 0
         runs -> expect(pathError.message).not.toBeNull()
 
     describe "when the archive path isn't a valid gzipped tar file", ->
@@ -76,7 +77,7 @@ describe "gzipped tar files", ->
         callback = (error, contents) -> pathError = error
         archive.readFile(archivePath, 'invalid.txt', callback)
         waitsFor -> pathError?
-        runs -> expect(pathError.message).not.toBeNull()
+        runs -> expect(pathError.message.length).toBeGreaterThan 0
 
     describe "when the second to last extension isn't .tar", ->
       it "calls back with an error", ->
@@ -85,4 +86,4 @@ describe "gzipped tar files", ->
         callback = (error, contents) -> pathError = error
         archive.readFile(archivePath, 'invalid.txt', callback)
         waitsFor -> pathError?
-        runs -> expect(pathError.message).not.toBeNull()
+        runs -> expect(pathError.message.length).toBeGreaterThan 0

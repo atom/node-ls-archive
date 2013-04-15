@@ -1,10 +1,12 @@
 fs = require 'fs'
 path = require 'path'
+util = require 'util'
 
 wrapCallback = (callback) ->
   called = false
   (error, data) ->
     unless called
+      error = new Error(error) unless util.isError(error)
       called = true
       callback(error, data)
 
@@ -49,7 +51,7 @@ readFileFromZip = (archivePath, filePath, callback) ->
   fileStream.on 'error', callback
   zipStream = fileStream.pipe(require('unzip').Parse())
   zipStream.on 'close', ->
-    callback(new Error("#{filePath} does not exist in the archive: #{archivePath}"))
+    callback("#{filePath} does not exist in the archive: #{archivePath}")
   zipStream.on 'error', callback
   zipStream.on 'entry', (entry) ->
     if filePath is entry.path
@@ -61,7 +63,7 @@ readFileFromZip = (archivePath, filePath, callback) ->
 
 readFileFromGzip = (archivePath, filePath, callback) ->
   if path.extname(path.basename(archivePath, '.gz')) isnt '.tar'
-    callback(new Error("'#{path.extname(filePath)}' files are not supported"))
+    callback("'#{path.extname(filePath)}' files are not supported")
     return
 
   fileStream = fs.createReadStream(archivePath)
@@ -69,14 +71,14 @@ readFileFromGzip = (archivePath, filePath, callback) ->
   gzipStream = fileStream.pipe(require('zlib').createGunzip())
   gzipStream.on 'error', callback
   gzipStream.on 'end', ->
-    callback(new Error("#{filePath} does not exist in the archive: #{archivePath}"))
+    callback("#{filePath} does not exist in the archive: #{archivePath}")
   readFileFromTarStream(gzipStream, filePath, callback)
 
 readFileFromTar = (archivePath, filePath, callback) ->
   fileStream = fs.createReadStream(archivePath, callback)
   fileStream.on 'error', callback
   fileStream.on 'end', ->
-    callback(new Error("#{filePath} does not exist in the archive: #{archivePath}"))
+    callback("#{filePath} does not exist in the archive: #{archivePath}")
   readFileFromTarStream(fileStream, filePath, callback)
 
 readFileFromTarStream = (inputStream, filePath, callback) ->
