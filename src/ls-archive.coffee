@@ -5,11 +5,11 @@ listZip = (archivePath, callback) ->
   unzip = require 'unzip'
   paths = []
   fileStream = fs.createReadStream(archivePath)
+  fileStream.on 'end', -> callback(paths)
   zipStream = fileStream.pipe(unzip.Parse())
   zipStream.on 'entry', (entry) ->
     paths.push(entry.path)
     entry.autodrain()
-  zipStream.on 'close', -> callback(paths)
 
 listGzip = (archivePath, callback) ->
   if path.extname(path.basename(archivePath, '.gz')) isnt '.tar'
