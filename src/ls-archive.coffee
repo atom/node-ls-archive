@@ -24,7 +24,7 @@ listZip = (archivePath, callback) ->
 
 listGzip = (archivePath, callback) ->
   if path.extname(path.basename(archivePath, '.gz')) isnt '.tar'
-    callback([])
+    callback("'#{path.extname(archivePath)}' files are not supported")
     return
 
   zlib = require 'zlib'

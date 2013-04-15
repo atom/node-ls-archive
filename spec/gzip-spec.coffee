@@ -41,6 +41,15 @@ describe "gzipped tar files", ->
         waitsFor -> pathError?
         runs -> expect(pathError.message.length).toBeGreaterThan 0
 
+    describe "when the second to last extension isn't .tar", ->
+      it "calls back with an error", ->
+        archivePath = path.join(fixturesRoot, 'invalid.txt.gz')
+        pathError = null
+        callback = (error, contents) -> pathError = error
+        archive.list(archivePath, callback)
+        waitsFor -> pathError?
+        runs -> expect(pathError.message.length).toBeGreaterThan 0
+
   describe ".readFile()", ->
     describe "when the path exists in the archive", ->
       it "calls back with the contents of the given path", ->
