@@ -42,7 +42,7 @@ readFileFromZip = (archivePath, filePath, callback) ->
   filePathFound = false
   zipStream = fileStream.pipe(unzip.Parse())
   zipStream.on 'entry', (entry) ->
-    if filePath is entry.path
+    if not filePathFound and filePath is entry.path
       contents = []
       entry.on 'data', (data) -> contents.push(data)
       entry.on 'end', ->
@@ -74,6 +74,7 @@ readFileFromTarStream = (inputStream, archivePath, filePath, callback) ->
 
   filePathFound = false
   tarStream.on 'entry', (entry) ->
+    return if filePathFound
     return unless filePath is entry.props.path
 
     contents = []
