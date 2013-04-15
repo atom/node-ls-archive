@@ -1,6 +1,6 @@
 {
   "name": "ls-archive",
-  "description": "A package for listing the files in archive files",
+  "description": "A package for listing and reading files in archive files",
   "version": "0.1.0",
   "keywords": [
     "ls",
