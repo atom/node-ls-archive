@@ -95,10 +95,11 @@ module.exports =
       when '.tar' then listTar(archivePath, callback)
       when '.gz' then listGzip(archivePath, callback)
       when '.zip' then listZip(archivePath, callback)
-      else callback([])
+      else callback(new Error("'#{path.extname(archivePath)}' files are not supported"))
 
   readFile: (archivePath, filePath, callback) ->
     switch path.extname(archivePath)
       when '.tar' then readFileFromTar(archivePath, filePath, callback)
       when '.gz' then readFileFromGzip(archivePath, filePath, callback)
       when '.zip' then readFileFromZip(archivePath, filePath, callback)
+      else callback(new Error("'#{path.extname(archivePath)}' files are not supported"))
