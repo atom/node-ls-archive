@@ -27,7 +27,16 @@ describe "zip file listing", ->
       it "calls back with an error", ->
         archivePath = path.join(fixturesRoot, 'not-a-file.zip')
         pathError = null
-        callback = (error, contents) -> pathError = error
+        callback = (error) -> pathError = error
+        archive.list(archivePath, callback)
+        waitsFor -> pathError?
+        runs -> expect(pathError.message).not.toBeNull()
+
+    describe "when the archive path isn't a valid zip file", ->
+      it "calls back with an error", ->
+        archivePath = path.join(fixturesRoot, 'invalid.zip')
+        pathError = null
+        callback = (error) -> pathError = error
         archive.list(archivePath, callback)
         waitsFor -> pathError?
         runs -> expect(pathError.message).not.toBeNull()
