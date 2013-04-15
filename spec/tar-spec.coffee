@@ -77,3 +77,12 @@ describe "tar files", ->
         archive.readFile(archivePath, 'invalid.txt', callback)
         waitsFor -> pathError?
         runs -> expect(pathError.message.length).toBeGreaterThan 0
+
+    describe "when the path is a folder", ->
+      it "calls back with an error", ->
+        archivePath = path.join(fixturesRoot, 'one-folder.tar')
+        pathError = null
+        callback = (error, contents) -> pathError = error
+        archive.readFile(archivePath, 'folder/', callback)
+        waitsFor -> pathError?
+        runs -> expect(pathError.message.length).toBeGreaterThan 0

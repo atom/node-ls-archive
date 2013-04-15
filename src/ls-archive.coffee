@@ -76,22 +76,26 @@ readFileFromGzip = (archivePath, filePath, callback) ->
   gzipStream.on 'error', callback
   gzipStream.on 'end', ->
     callback("#{filePath} does not exist in the archive: #{archivePath}")
-  readFileFromTarStream(gzipStream, filePath, callback)
+  readFileFromTarStream(gzipStream, archivePath, filePath, callback)
 
 readFileFromTar = (archivePath, filePath, callback) ->
   fileStream = fs.createReadStream(archivePath, callback)
   fileStream.on 'error', callback
   fileStream.on 'end', ->
     callback("#{filePath} does not exist in the archive: #{archivePath}")
-  readFileFromTarStream(fileStream, filePath, callback)
+  readFileFromTarStream(fileStream, archivePath, filePath, callback)
 
-readFileFromTarStream = (inputStream, filePath, callback) ->
+readFileFromTarStream = (inputStream, archivePath, filePath, callback) ->
   tar = require 'tar'
   tarStream = inputStream.pipe(tar.Parse())
 
   tarStream.on 'error', callback
   tarStream.on 'entry', (entry) ->
     return unless filePath is entry.props.path
+
+    unless entry.props.type is '0'
+      callback("#{filePath} is not a normal file in the archive: #{archivePath}")
+      return
 
     contents = []
     entry.on 'data', (data) -> contents.push(data)
