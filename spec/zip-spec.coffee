@@ -11,14 +11,14 @@ describe "zip file listing", ->
     describe "when the archive file exists", ->
       it "returns files in the zip archive", ->
         zipPaths = null
-        callback = (paths) -> zipPaths = paths
+        callback = (error, paths) -> zipPaths = paths
         archive.list(path.join(fixturesRoot, 'one-file.zip'), callback)
         waitsFor -> zipPaths?
         runs -> expect(zipPaths).toEqual ['file.txt']
 
       it "returns folders in the zip archive", ->
         zipPaths = null
-        callback = (paths) -> zipPaths = paths
+        callback = (error, paths) -> zipPaths = paths
         archive.list(path.join(fixturesRoot, 'one-folder.zip'), callback)
         waitsFor -> zipPaths?
         runs -> expect(zipPaths).toEqual ['folder/']

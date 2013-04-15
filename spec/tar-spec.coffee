@@ -11,14 +11,14 @@ describe "tar files", ->
     describe "when the archive file exists", ->
       it "returns files in the tar archive", ->
         tarPaths = null
-        callback = (paths) -> tarPaths = paths
+        callback = (error, paths) -> tarPaths = paths
         archive.list(path.join(fixturesRoot, 'one-file.tar'), callback)
         waitsFor -> tarPaths?
         runs -> expect(tarPaths).toEqual ['file.txt']
 
       it "returns folders in the tar archive", ->
         tarPaths = null
-        callback = (paths) -> tarPaths = paths
+        callback = (error, paths) -> tarPaths = paths
         archive.list(path.join(fixturesRoot, 'one-folder.tar'), callback)
         waitsFor -> tarPaths?
         runs -> expect(tarPaths).toEqual ['folder/']
