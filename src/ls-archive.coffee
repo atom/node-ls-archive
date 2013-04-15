@@ -90,13 +90,11 @@ module.exports =
     tarStream.on 'entry', (entry) ->
       return unless filePath is entry.props.path
 
-      contents = new Buffer(entry.props.size)
-      position = 0
-      entry.on 'data', (data) ->
-        position += data.copy(contents, 0, position)
+      contents = []
+      entry.on 'data', (data) -> contents.push(data)
       entry.on 'end', ->
         filePathFound = true
-        callback(null, contents.toString())
+        callback(null, Buffer.concat(contents).toString())
     tarStream.on 'end', ->
       unless filePathFound
         callback(new Error("#{filePath} does not exist in the archive: #{archivePath}"))
