@@ -13,7 +13,7 @@ wrapCallback = (callback) ->
   called = false
   (error, data) ->
     unless called
-      error = new Error(error) unless util.isError(error)
+      error = new Error(error) if error? and not util.isError(error)
       called = true
       callback(error, data)
 
