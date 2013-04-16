@@ -8,7 +8,9 @@
     "gzip",
     "tar",
     "unzip",
-    "gunzip"
+    "gunzip",
+    "archive",
+    "archives"
   ],
   "author": {
     "name": "Kevin Sawicki",
