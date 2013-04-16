@@ -78,13 +78,11 @@ readFileFromZip = (archivePath, filePath, callback) ->
   zipStream.on 'error', callback
   zipStream.on 'entry', (entry) ->
     if filePath is entry.path
-      if entry.type isnt 'File'
+      if entry.type is 'File'
+        readEntry(entry, callback)
+      else
         callback("#{filePath} is a folder in the archive: #{archivePath}")
-        return
-
-      contents = []
-      entry.on 'data', (data) -> contents.push(data)
-      entry.on 'end', -> callback(null, Buffer.concat(contents).toString())
+        entry.autodrain()
     else
       entry.autodrain()
 
@@ -116,13 +114,15 @@ readFileFromTarStream = (inputStream, archivePath, filePath, callback) ->
   tarStream.on 'entry', (entry) ->
     return unless filePath is entry.props.path
 
-    unless entry.props.type is '0'
+    if entry.props.type is '0'
+      readEntry(entry, callback)
+    else
       callback("#{filePath} is not a normal file in the archive: #{archivePath}")
-      return
 
-    contents = []
-    entry.on 'data', (data) -> contents.push(data)
-    entry.on 'end', -> callback(null, Buffer.concat(contents).toString())
+readEntry = (entry, callback) ->
+  contents = []
+  entry.on 'data', (data) -> contents.push(data)
+  entry.on 'end', -> callback(null, Buffer.concat(contents).toString())
 
 module.exports =
   list: (archivePath, callback) ->
