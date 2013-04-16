@@ -9,6 +9,9 @@ describe "Common behavior", ->
       waitsFor -> pathError?
       runs -> expect(pathError.message).not.toBeNull()
 
+    it "returns undefined", ->
+      expect(archive.list('/tmp/file.zip', ->)).toBeUndefined()
+
   describe ".readFile()", ->
     it "calls back with an error for unsupported extensions", ->
       pathError = null
@@ -16,3 +19,6 @@ describe "Common behavior", ->
       archive.readFile('/tmp/file.txt', 'file.txt', callback)
       waitsFor -> pathError?
       runs -> expect(pathError.message).not.toBeNull()
+
+    it "returns undefined", ->
+      expect(archive.readFile('/tmp/file.zip', 'file.txt', ->)).toBeUndefined()

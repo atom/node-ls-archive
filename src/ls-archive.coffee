@@ -131,6 +131,7 @@ module.exports =
       when '.gz' then listGzip(archivePath, wrapCallback(callback))
       when '.zip' then listZip(archivePath, wrapCallback(callback))
       else callback(new Error("'#{path.extname(archivePath)}' files are not supported"))
+    undefined
 
   readFile: (archivePath, filePath, callback) ->
     switch path.extname(archivePath)
@@ -138,3 +139,4 @@ module.exports =
       when '.gz' then readFileFromGzip(archivePath, filePath, wrapCallback(callback))
       when '.zip' then readFileFromZip(archivePath, filePath, wrapCallback(callback))
       else callback(new Error("'#{path.extname(archivePath)}' files are not supported"))
+    undefined
