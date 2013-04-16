@@ -1,7 +1,7 @@
 archive = require '../lib/ls-archive'
 path = require 'path'
 
-describe "zip file listing", ->
+describe "zip files", ->
   fixturesRoot = null
 
   beforeEach ->
