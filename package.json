@@ -23,7 +23,7 @@
   "bugs": {
     "url": "https://github.com/atom/node-ls-archive/issues"
   },
-  "main": "./lib/ctags.js",
+  "main": "./lib/ls-archive.js",
   "devDependencies": {
     "grunt": "~0.4.0",
     "grunt-contrib-coffee": "~0.4.0",
