@@ -5,6 +5,7 @@ util = require 'util'
 class ArchiveEntry
   constructor: (@path, @type) ->
 
+  getPath: -> @path
   isFile: -> @type is 0
   isDirectory: -> @type is 5
   isSymbolicLink: -> @type is 2
