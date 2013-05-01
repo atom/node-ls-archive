@@ -2,6 +2,12 @@
   "name": "ls-archive",
   "description": "A package for listing and reading files in archive files",
   "version": "0.3.0",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/atom/node-ls-archive/raw/master/LICENSE.md"
+    }
+  ],
   "keywords": [
     "ls",
     "zip",
