@@ -40,8 +40,12 @@ listZip = (archivePath, callback) ->
     paths.push(new ArchiveEntry(entryPath, entryType))
     entry.autodrain()
 
+isValidGzipPath = (archivePath) ->
+  path.extname(archivePath) is '.tgz' or
+    path.extname(path.basename(archivePath, '.gz')) is '.tar'
+
 listGzip = (archivePath, callback) ->
-  if path.extname(path.basename(archivePath, '.gz')) isnt '.tar'
+  unless isValidGzipPath(archivePath)
     callback("'#{path.extname(archivePath)}' files are not supported")
     return
 
@@ -88,7 +92,7 @@ readFileFromZip = (archivePath, filePath, callback) ->
       entry.autodrain()
 
 readFileFromGzip = (archivePath, filePath, callback) ->
-  if path.extname(path.basename(archivePath, '.gz')) isnt '.tar'
+  unless isValidGzipPath(archivePath)
     callback("'#{path.extname(archivePath)}' files are not supported")
     return
 
@@ -129,7 +133,7 @@ module.exports =
   list: (archivePath, callback) ->
     switch path.extname(archivePath)
       when '.tar' then listTar(archivePath, wrapCallback(callback))
-      when '.gz' then listGzip(archivePath, wrapCallback(callback))
+      when '.gz', '.tgz' then listGzip(archivePath, wrapCallback(callback))
       when '.zip' then listZip(archivePath, wrapCallback(callback))
       else callback(new Error("'#{path.extname(archivePath)}' files are not supported"))
     undefined
@@ -137,7 +141,7 @@ module.exports =
   readFile: (archivePath, filePath, callback) ->
     switch path.extname(archivePath)
       when '.tar' then readFileFromTar(archivePath, filePath, wrapCallback(callback))
-      when '.gz' then readFileFromGzip(archivePath, filePath, wrapCallback(callback))
+      when '.gz', '.tgz' then readFileFromGzip(archivePath, filePath, wrapCallback(callback))
       when '.zip' then readFileFromZip(archivePath, filePath, wrapCallback(callback))
       else callback(new Error("'#{path.extname(archivePath)}' files are not supported"))
     undefined

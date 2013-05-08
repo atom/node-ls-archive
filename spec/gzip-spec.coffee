@@ -21,10 +21,34 @@ describe "gzipped tar files", ->
           expect(gzipPaths[0].isFile()).toBe true
           expect(gzipPaths[0].isSymbolicLink()).toBe false
 
+      it "returns files in the gzipped tar archive", ->
+        gzipPaths = null
+        callback = (error, paths) -> gzipPaths = paths
+        archive.list(path.join(fixturesRoot, 'one-file.tgz'), callback)
+        waitsFor -> gzipPaths?
+        runs ->
+          expect(gzipPaths.length).toBe 1
+          expect(gzipPaths[0].path).toBe 'file.txt'
+          expect(gzipPaths[0].isDirectory()).toBe false
+          expect(gzipPaths[0].isFile()).toBe true
+          expect(gzipPaths[0].isSymbolicLink()).toBe false
+
       it "returns folders in the gzipped tar archive", ->
         gzipPaths = null
         callback = (error, paths) -> gzipPaths = paths
         archive.list(path.join(fixturesRoot, 'one-folder.tar.gz'), callback)
+        waitsFor -> gzipPaths?
+        runs ->
+          expect(gzipPaths.length).toBe 1
+          expect(gzipPaths[0].path).toBe 'folder'
+          expect(gzipPaths[0].isDirectory()).toBe true
+          expect(gzipPaths[0].isFile()).toBe false
+          expect(gzipPaths[0].isSymbolicLink()).toBe false
+
+      it "returns folders in the gzipped tar archive", ->
+        gzipPaths = null
+        callback = (error, paths) -> gzipPaths = paths
+        archive.list(path.join(fixturesRoot, 'one-folder.tgz'), callback)
         waitsFor -> gzipPaths?
         runs ->
           expect(gzipPaths.length).toBe 1
@@ -64,6 +88,14 @@ describe "gzipped tar files", ->
     describe "when the path exists in the archive", ->
       it "calls back with the contents of the given path", ->
         archivePath = path.join(fixturesRoot, 'one-file.tar.gz')
+        pathContents = null
+        callback = (error, contents) -> pathContents = contents
+        archive.readFile(archivePath, 'file.txt', callback)
+        waitsFor -> pathContents?
+        runs -> expect(pathContents).toBe 'hello\n'
+
+      it "calls back with the contents of the given path", ->
+        archivePath = path.join(fixturesRoot, 'one-file.tgz')
         pathContents = null
         callback = (error, contents) -> pathContents = contents
         archive.readFile(archivePath, 'file.txt', callback)
