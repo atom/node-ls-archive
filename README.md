@@ -6,6 +6,7 @@ Supported file extensions:
 
   * .tar
   * .tar.gz
+  * .tgz
   * .zip
 
 ## Installing
