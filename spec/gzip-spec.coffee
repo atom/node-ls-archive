@@ -138,3 +138,30 @@ describe "gzipped tar files", ->
         archive.readFile(archivePath, 'invalid.txt', callback)
         waitsFor -> pathError?
         runs -> expect(pathError.message.length).toBeGreaterThan 0
+
+  describe ".readGzip()", ->
+    it "calls back with the string contents of the archive", ->
+      archivePath = path.join(fixturesRoot, 'file.txt.gz')
+      archiveContents = null
+      callback = (error, contents) -> archiveContents = contents
+      archive.readGzip(archivePath, callback)
+      waitsFor -> archiveContents?
+      runs -> expect(archiveContents).toBe 'hello\n'
+
+    describe "when the archive path isn't a valid gzipped tar file", ->
+      it "calls back with an error", ->
+        archivePath = path.join(fixturesRoot, 'invalid.tar.gz')
+        readError = null
+        callback = (error, contents) -> readError = error
+        archive.readGzip(archivePath, callback)
+        waitsFor -> readError?
+        runs -> expect(readError.message.length).toBeGreaterThan 0
+
+    describe "when the archive path does not exist", ->
+      it "calls back with an error", ->
+        archivePath = path.join(fixturesRoot, 'not-a-file.tar.gz')
+        readError = null
+        callback = (error, contents) -> readError = error
+        archive.readGzip(archivePath, callback)
+        waitsFor -> readError?
+        runs -> expect(readError.message.length).toBeGreaterThan 0

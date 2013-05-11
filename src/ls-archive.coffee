@@ -145,3 +145,18 @@ module.exports =
       when '.zip' then readFileFromZip(archivePath, filePath, wrapCallback(callback))
       else callback(new Error("'#{path.extname(archivePath)}' files are not supported"))
     undefined
+
+  readGzip: (gzipArchivePath, callback) ->
+    callback = wrapCallback(callback)
+
+    zlib = require 'zlib'
+    fileStream = fs.createReadStream(gzipArchivePath)
+    fileStream.on 'error', callback
+    gzipStream = fileStream.pipe(zlib.createGunzip())
+    gzipStream.on 'error', callback
+
+    chunks = []
+    gzipStream.on 'data', (chunk) ->
+      chunks.push(chunk)
+    gzipStream.on 'end', ->
+      callback(null, Buffer.concat(chunks).toString())
