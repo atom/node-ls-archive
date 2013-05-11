@@ -119,7 +119,6 @@ describe "gzipped tar files", ->
         archive.readFile(archivePath, 'not-a-file.txt', callback)
         waitsFor -> pathError?
         runs -> expect(pathError.message.length).toBeGreaterThan 0
-        runs -> expect(pathError.message).not.toBeNull()
 
     describe "when the archive path isn't a valid gzipped tar file", ->
       it "calls back with an error", ->
