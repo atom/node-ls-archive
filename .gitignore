@@ -3,3 +3,4 @@ build/
 lib/
 npm-debug.log
 .node-version
+.DS_Store

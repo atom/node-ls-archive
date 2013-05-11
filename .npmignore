@@ -6,3 +6,4 @@ src/
 .npmignore
 npm-debug.log
 .node-version
+.DS_Store
