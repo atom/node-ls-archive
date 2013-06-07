@@ -140,6 +140,12 @@ isGzipExtension = (extension) ->
   extension is '.gz' or extension is '.tgz'
 
 module.exports =
+  isPathSupported: (archivePath) ->
+    return false unless archivePath
+
+    extension = path.extname(archivePath)
+    isTarExtension(extension) or isZipExtension(extension) or isGzipExtension(extension)
+
   list: (archivePath, callback) ->
     extension = path.extname(archivePath)
     if isTarExtension(extension)

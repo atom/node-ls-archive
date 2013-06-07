@@ -22,3 +22,15 @@ describe "Common behavior", ->
 
     it "returns undefined", ->
       expect(archive.readFile('/tmp/file.zip', 'file.txt', ->)).toBeUndefined()
+
+  describe ".isPathSupported()", ->
+    it "returns true for supported path extensions", ->
+      expect(archive.isPathSupported('/a.zip')).toBe true
+      expect(archive.isPathSupported('/a.jar')).toBe true
+      expect(archive.isPathSupported('/a.tgz')).toBe true
+      expect(archive.isPathSupported('/a.tar.gz')).toBe true
+      expect(archive.isPathSupported('/a.txt')).toBe false
+      expect(archive.isPathSupported('/')).toBe false
+      expect(archive.isPathSupported('')).toBe false
+      expect(archive.isPathSupported(null)).toBe false
+      expect(archive.isPathSupported()).toBe false
