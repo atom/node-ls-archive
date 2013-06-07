@@ -41,15 +41,7 @@ listZip = (archivePath, callback) ->
     paths.push(new ArchiveEntry(entryPath, entryType))
     entry.autodrain()
 
-isValidGzipPath = (archivePath) ->
-  path.extname(archivePath) is '.tgz' or
-    path.extname(path.basename(archivePath, '.gz')) is '.tar'
-
 listGzip = (archivePath, callback) ->
-  unless isValidGzipPath(archivePath)
-    callback("'#{path.extname(archivePath)}' files are not supported")
-    return
-
   zlib = require 'zlib'
   fileStream = fs.createReadStream(archivePath)
   fileStream.on 'error', callback
@@ -93,10 +85,6 @@ readFileFromZip = (archivePath, filePath, callback) ->
       entry.autodrain()
 
 readFileFromGzip = (archivePath, filePath, callback) ->
-  unless isValidGzipPath(archivePath)
-    callback("'#{path.extname(archivePath)}' files are not supported")
-    return
-
   fileStream = fs.createReadStream(archivePath)
   fileStream.on 'error', callback
   gzipStream = fileStream.pipe(require('zlib').createGunzip())
@@ -130,41 +118,39 @@ readEntry = (entry, callback) ->
   entry.on 'data', (data) -> contents.push(data)
   entry.on 'end', -> callback(null, Buffer.concat(contents).toString())
 
-isTarExtension = (extension) ->
-  extension is '.tar'
+isTarPath = (archivePath) ->
+  path.extname(archivePath) is '.tar'
 
-isZipExtension = (extension) ->
+isZipPath = (archivePath) ->
+  extension = path.extname(archivePath)
   extension is '.zip' or extension is '.jar'
 
-isGzipExtension = (extension) ->
-  extension is '.gz' or extension is '.tgz'
+isGzipPath = (archivePath) ->
+  path.extname(archivePath) is '.tgz' or
+    path.extname(path.basename(archivePath, '.gz')) is '.tar'
 
 module.exports =
   isPathSupported: (archivePath) ->
     return false unless archivePath
-
-    extension = path.extname(archivePath)
-    isTarExtension(extension) or isZipExtension(extension) or isGzipExtension(extension)
+    isTarPath(archivePath) or isZipPath(archivePath) or isGzipPath(archivePath)
 
   list: (archivePath, callback) ->
-    extension = path.extname(archivePath)
-    if isTarExtension(extension)
+    if isTarPath(archivePath)
       listTar(archivePath, wrapCallback(callback))
-    else if isGzipExtension(extension)
+    else if isGzipPath(archivePath)
       listGzip(archivePath, wrapCallback(callback))
-    else if isZipExtension(extension)
+    else if isZipPath(archivePath)
       listZip(archivePath, wrapCallback(callback))
     else
       callback(new Error("'#{path.extname(archivePath)}' files are not supported"))
     undefined
 
   readFile: (archivePath, filePath, callback) ->
-    extension = path.extname(archivePath)
-    if isTarExtension(extension)
+    if isTarPath(archivePath)
       readFileFromTar(archivePath, filePath, wrapCallback(callback))
-    else if isGzipExtension(extension)
+    else if isGzipPath(archivePath)
       readFileFromGzip(archivePath, filePath, wrapCallback(callback))
-    else if isZipExtension(extension)
+    else if isZipPath(archivePath)
       readFileFromZip(archivePath, filePath, wrapCallback(callback))
     else
       callback(new Error("'#{path.extname(archivePath)}' files are not supported"))

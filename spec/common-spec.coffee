@@ -27,8 +27,10 @@ describe "Common behavior", ->
     it "returns true for supported path extensions", ->
       expect(archive.isPathSupported('/a.zip')).toBe true
       expect(archive.isPathSupported('/a.jar')).toBe true
+      expect(archive.isPathSupported('/a.tar')).toBe true
       expect(archive.isPathSupported('/a.tgz')).toBe true
       expect(archive.isPathSupported('/a.tar.gz')).toBe true
+      expect(archive.isPathSupported('/a.bar.gz')).toBe false
       expect(archive.isPathSupported('/a.txt')).toBe false
       expect(archive.isPathSupported('/')).toBe false
       expect(archive.isPathSupported('')).toBe false
