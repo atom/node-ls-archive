@@ -14,10 +14,10 @@ module.exports = ->
           console.log("#{archivePath} (#{files.length})")
           for file, index in files
             if index is files.length - 1
-              itemLine = '\u2514\u2500\u2500 '
+              prefix = '\u2514\u2500\u2500 '
             else
-              itemLine = '\u251C\u2500\u2500 '
-            console.log "#{itemLine}#{file.getPath()}"
+              prefix = '\u251C\u2500\u2500 '
+            console.log "#{prefix}#{file.getPath()}"
           console.log()
         callback()
 
