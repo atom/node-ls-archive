@@ -40,10 +40,11 @@
     "grunt-cli": "~0.1.6",
     "grunt-shell": "~0.2.2",
     "jasmine-focused": "~0.1.0",
-    "grunt-coffeelint": "0.0.6"
+    "grunt-coffeelint": "0.0.6",
+    "rimraf": "~2.1.4"
   },
   "scripts": {
-    "prepublish": "grunt coffee",
+    "prepublish": "grunt",
     "test": "jasmine-focused --coffee --captureExceptions spec/"
   },
   "dependencies": {
