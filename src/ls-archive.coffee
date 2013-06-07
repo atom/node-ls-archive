@@ -1,6 +1,7 @@
 fs = require 'fs'
 path = require 'path'
 util = require 'util'
+_ = require 'underscore'
 
 class ArchiveEntry
   constructor: (@path, @type) ->
@@ -19,7 +20,7 @@ wrapCallback = (callback) ->
       called = true
       callback(error, data)
 
-listZip = (archivePath, callback) ->
+listZip = (archivePath, options, callback) ->
   unzip = require 'unzip'
   paths = []
   fileStream = fs.createReadStream(archivePath)
@@ -41,20 +42,20 @@ listZip = (archivePath, callback) ->
     paths.push(new ArchiveEntry(entryPath, entryType))
     entry.autodrain()
 
-listGzip = (archivePath, callback) ->
+listGzip = (archivePath, options, callback) ->
   zlib = require 'zlib'
   fileStream = fs.createReadStream(archivePath)
   fileStream.on 'error', callback
   gzipStream = fileStream.pipe(zlib.createGunzip())
   gzipStream.on 'error', callback
-  listTarStream(gzipStream, callback)
+  listTarStream(gzipStream, options, callback)
 
-listTar = (archivePath, callback) ->
+listTar = (archivePath, options, callback) ->
   fileStream = fs.createReadStream(archivePath)
   fileStream.on 'error', callback
-  listTarStream(fileStream, callback)
+  listTarStream(fileStream, options, callback)
 
-listTarStream = (inputStream, callback) ->
+listTarStream = (inputStream, options, callback) ->
   paths = []
   tarStream = inputStream.pipe(require('tar').Parse())
   tarStream.on 'error', callback
@@ -134,13 +135,17 @@ module.exports =
     return false unless archivePath
     isTarPath(archivePath) or isZipPath(archivePath) or isGzipPath(archivePath)
 
-  list: (archivePath, callback) ->
+  list: (archivePath, options={}, callback) ->
+    if _.isFunction(options)
+      callback = options
+      options = {}
+
     if isTarPath(archivePath)
-      listTar(archivePath, wrapCallback(callback))
+      listTar(archivePath, options, wrapCallback(callback))
     else if isGzipPath(archivePath)
-      listGzip(archivePath, wrapCallback(callback))
+      listGzip(archivePath, options, wrapCallback(callback))
     else if isZipPath(archivePath)
-      listZip(archivePath, wrapCallback(callback))
+      listZip(archivePath, options, wrapCallback(callback))
     else
       callback(new Error("'#{path.extname(archivePath)}' files are not supported"))
     undefined
