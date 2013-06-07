@@ -130,21 +130,38 @@ readEntry = (entry, callback) ->
   entry.on 'data', (data) -> contents.push(data)
   entry.on 'end', -> callback(null, Buffer.concat(contents).toString())
 
+isTarExtension = (extension) ->
+  extension is '.tar'
+
+isZipExtension = (extension) ->
+  extension is '.zip' or extension is '.jar'
+
+isGzipExtension = (extension) ->
+  extension is '.gz' or extension is '.tgz'
+
 module.exports =
   list: (archivePath, callback) ->
-    switch path.extname(archivePath)
-      when '.tar' then listTar(archivePath, wrapCallback(callback))
-      when '.gz', '.tgz' then listGzip(archivePath, wrapCallback(callback))
-      when '.zip', '.jar' then listZip(archivePath, wrapCallback(callback))
-      else callback(new Error("'#{path.extname(archivePath)}' files are not supported"))
+    extension = path.extname(archivePath)
+    if isTarExtension(extension)
+      listTar(archivePath, wrapCallback(callback))
+    else if isGzipExtension(extension)
+      listGzip(archivePath, wrapCallback(callback))
+    else if isZipExtension(extension)
+      listZip(archivePath, wrapCallback(callback))
+    else
+      callback(new Error("'#{path.extname(archivePath)}' files are not supported"))
     undefined
 
   readFile: (archivePath, filePath, callback) ->
-    switch path.extname(archivePath)
-      when '.tar' then readFileFromTar(archivePath, filePath, wrapCallback(callback))
-      when '.gz', '.tgz' then readFileFromGzip(archivePath, filePath, wrapCallback(callback))
-      when '.zip', '.jar' then readFileFromZip(archivePath, filePath, wrapCallback(callback))
-      else callback(new Error("'#{path.extname(archivePath)}' files are not supported"))
+    extension = path.extname(archivePath)
+    if isTarExtension(extension)
+      readFileFromTar(archivePath, filePath, wrapCallback(callback))
+    else if isGzipExtension(extension)
+      readFileFromGzip(archivePath, filePath, wrapCallback(callback))
+    else if isZipExtension(extension)
+      readFileFromZip(archivePath, filePath, wrapCallback(callback))
+    else
+      callback(new Error("'#{path.extname(archivePath)}' files are not supported"))
     undefined
 
   readGzip: (gzipArchivePath, callback) ->
