@@ -33,12 +33,10 @@ listZip = (archivePath, options, callback) ->
       entryPath = entry.path[0...-1]
     else
       entryPath = entry.path
-    if entry.type is 'Directory'
-      entryType = 5
-    else if entry.type is 'File'
-      entryType = 0
-    else
-      entryType = -1
+    switch entry.type
+      when 'Directory' then entryType = 5
+      when 'File' then entryType = 0
+      else entryType = -1
     paths.push(new ArchiveEntry(entryPath, entryType))
     entry.autodrain()
 
