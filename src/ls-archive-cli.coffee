@@ -9,7 +9,7 @@ module.exports = ->
     do (archivePath) ->
       archive.list archivePath, (error, files) ->
         if error?
-          console.error("Error reading: #{file}")
+          console.error("Error reading: #{archivePath}")
         else
           console.log("#{archivePath} (#{files.length})")
           for file, index in files
