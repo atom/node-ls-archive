@@ -9,6 +9,7 @@ class ArchiveEntry
   isFile: -> @type is 0
   isDirectory: -> @type is 5
   isSymbolicLink: -> @type is 2
+  toString: -> @getPath()
 
 wrapCallback = (callback) ->
   called = false
