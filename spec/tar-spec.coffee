@@ -33,6 +33,26 @@ describe "tar files", ->
           expect(tarPaths[0].isFile()).toBe false
           expect(tarPaths[0].isSymbolicLink()).toBe false
 
+      describe "when the tree option is set to true", ->
+        it "returns archive entries nested under their parent directory", ->
+          tree = null
+          archive.list path.join(__dirname, 'fixtures', 'nested.tar'), tree: true, (error, files) ->
+            tree = files
+          waitsFor -> tree?
+          runs ->
+            expect(tree.length).toBe 2
+
+            expect(tree[0].getPath()).toBe 'd1'
+            expect(tree[0].children[0].getName()).toBe 'd2'
+            expect(tree[0].children[0].children[0].getName()).toBe 'd3'
+            expect(tree[0].children[0].children[1].getName()).toBe 'f1.txt'
+            expect(tree[0].children[1].getName()).toBe 'd4'
+            expect(tree[0].children[2].getName()).toBe 'f2.txt'
+
+            expect(tree[1].getPath()).toBe 'da'
+            expect(tree[1].children[0].getName()).toBe 'db'
+            expect(tree[1].children[1].getName()).toBe 'fa.txt'
+
     describe "when the archive path does not exist", ->
       it "calls back with an error", ->
         archivePath = path.join(fixturesRoot, 'not-a-file.tar')

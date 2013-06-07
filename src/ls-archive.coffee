@@ -5,12 +5,39 @@ _ = require 'underscore'
 
 class ArchiveEntry
   constructor: (@path, @type) ->
+    @children = [] if @isDirectory()
+
+  add: (entry, segments) ->
+    return false unless @isDirectory()
+
+    segments ?= entry.getPath().split('/')
+    return false unless segments.shift() is @getName()
+
+    if segments.length is 1
+      @children.push(entry)
+      true
+    else
+      for child in @children
+        return true if child.add(entry, segments)
+      false
 
   getPath: -> @path
+  getName: -> path.basename(@path)
   isFile: -> @type is 0
   isDirectory: -> @type is 5
   isSymbolicLink: -> @type is 2
   toString: -> @getPath()
+
+convertToTree = (entries) ->
+  rootEntries = []
+  for entry in entries
+    segments = entry.getPath().split('/')
+    if segments.length is 1
+      rootEntries.push(entry)
+    else
+      for rootEntry in rootEntries
+        break if rootEntry.add(entry)
+  rootEntries
 
 wrapCallback = (callback) ->
   called = false
@@ -22,11 +49,13 @@ wrapCallback = (callback) ->
 
 listZip = (archivePath, options, callback) ->
   unzip = require 'unzip'
-  paths = []
+  entries = []
   fileStream = fs.createReadStream(archivePath)
   fileStream.on 'error', callback
   zipStream = fileStream.pipe(unzip.Parse())
-  zipStream.on 'close', -> callback(null, paths)
+  zipStream.on 'close', ->
+    entries = convertToTree(entries) if options.tree
+    callback(null, entries)
   zipStream.on 'error', callback
   zipStream.on 'entry', (entry) ->
     if entry.path[-1..] is '/'
@@ -37,7 +66,7 @@ listZip = (archivePath, options, callback) ->
       when 'Directory' then entryType = 5
       when 'File' then entryType = 0
       else entryType = -1
-    paths.push(new ArchiveEntry(entryPath, entryType))
+    entries.push(new ArchiveEntry(entryPath, entryType))
     entry.autodrain()
 
 listGzip = (archivePath, options, callback) ->
@@ -54,7 +83,7 @@ listTar = (archivePath, options, callback) ->
   listTarStream(fileStream, options, callback)
 
 listTarStream = (inputStream, options, callback) ->
-  paths = []
+  entries = []
   tarStream = inputStream.pipe(require('tar').Parse())
   tarStream.on 'error', callback
   tarStream.on 'entry', (entry) ->
@@ -63,8 +92,10 @@ listTarStream = (inputStream, options, callback) ->
     else
       entryPath = entry.props.path
     entryType = parseInt(entry.props.type)
-    paths.push(new ArchiveEntry(entryPath, entryType))
-  tarStream.on 'end', -> callback(null, paths)
+    entries.push(new ArchiveEntry(entryPath, entryType))
+  tarStream.on 'end', ->
+    entries = convertToTree(entries) if options.tree
+    callback(null, entries)
 
 readFileFromZip = (archivePath, filePath, callback) ->
   fileStream = fs.createReadStream(archivePath)
