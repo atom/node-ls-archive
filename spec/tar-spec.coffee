@@ -34,24 +34,53 @@ describe "tar files", ->
           expect(tarPaths[0].isSymbolicLink()).toBe false
 
       describe "when the tree option is set to true", ->
-        it "returns archive entries nested under their parent directory", ->
-          tree = null
-          archive.list path.join(__dirname, 'fixtures', 'nested.tar'), tree: true, (error, files) ->
-            tree = files
-          waitsFor -> tree?
-          runs ->
-            expect(tree.length).toBe 2
+        describe "when the archive has no directories entries", ->
+          it "returns archive entries nested under their parent directory", ->
+            tree = null
+            archive.list path.join(__dirname, 'fixtures', 'no-dir-entries.tgz'), tree: true, (error, files) ->
+              tree = files
+            waitsFor -> tree?
+            runs ->
+              expect(tree.length).toBe 1
+              expect(tree[0].getName()).toBe 'package'
+              expect(tree[0].getPath()).toBe 'package'
+              expect(tree[0].children.length).toBe 5
+              expect(tree[0].children[0].getName()).toBe 'package.json'
+              expect(tree[0].children[0].getPath()).toBe 'package/package.json'
+              expect(tree[0].children[1].getName()).toBe 'README.md'
+              expect(tree[0].children[1].getPath()).toBe 'package/README.md'
+              expect(tree[0].children[2].getName()).toBe 'LICENSE.md'
+              expect(tree[0].children[2].getPath()).toBe 'package/LICENSE.md'
+              expect(tree[0].children[3].getName()).toBe 'bin'
+              expect(tree[0].children[3].getPath()).toBe 'package/bin'
+              expect(tree[0].children[4].children[0].getName()).toBe 'lister.js'
+              expect(tree[0].children[4].children[0].getPath()).toBe 'package/lib/lister.js'
+              expect(tree[0].children[4].children[1].getName()).toBe 'ls-archive-cli.js'
+              expect(tree[0].children[4].children[1].getPath()).toBe 'package/lib/ls-archive-cli.js'
+              expect(tree[0].children[4].children[2].getName()).toBe 'ls-archive.js'
+              expect(tree[0].children[4].children[2].getPath()).toBe 'package/lib/ls-archive.js'
+              expect(tree[0].children[4].children[3].getName()).toBe 'reader.js'
+              expect(tree[0].children[4].children[3].getPath()).toBe 'package/lib/reader.js'
 
-            expect(tree[0].getPath()).toBe 'd1'
-            expect(tree[0].children[0].getName()).toBe 'd2'
-            expect(tree[0].children[0].children[0].getName()).toBe 'd3'
-            expect(tree[0].children[0].children[1].getName()).toBe 'f1.txt'
-            expect(tree[0].children[1].getName()).toBe 'd4'
-            expect(tree[0].children[2].getName()).toBe 'f2.txt'
+        describe "when the archive has multiple directories at the root", ->
+          it "returns archive entries nested under their parent directory", ->
+            tree = null
+            archive.list path.join(__dirname, 'fixtures', 'nested.tar'), tree: true, (error, files) ->
+              tree = files
+            waitsFor -> tree?
+            runs ->
+              expect(tree.length).toBe 2
 
-            expect(tree[1].getPath()).toBe 'da'
-            expect(tree[1].children[0].getName()).toBe 'db'
-            expect(tree[1].children[1].getName()).toBe 'fa.txt'
+              expect(tree[0].getPath()).toBe 'd1'
+              expect(tree[0].children[0].getName()).toBe 'd2'
+              expect(tree[0].children[0].children[0].getName()).toBe 'd3'
+              expect(tree[0].children[0].children[1].getName()).toBe 'f1.txt'
+              expect(tree[0].children[1].getName()).toBe 'd4'
+              expect(tree[0].children[2].getName()).toBe 'f2.txt'
+
+              expect(tree[1].getPath()).toBe 'da'
+              expect(tree[1].children[0].getName()).toBe 'db'
+              expect(tree[1].children[1].getName()).toBe 'fa.txt'
 
     describe "when the archive path does not exist", ->
       it "calls back with an error", ->

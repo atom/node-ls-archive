@@ -7,19 +7,24 @@ class ArchiveEntry
   constructor: (@path, @type) ->
     @children = [] if @isDirectory()
 
-  add: (entry, segments) ->
+  add: (entry) ->
     return false unless @isDirectory()
+    return false unless entry.getPath().indexOf("#{@getPath()}/") is 0
 
-    segments ?= entry.getPath().split('/')
-    return false unless segments.shift() is @getName()
-
+    segments = entry.getPath().substring(@getPath().length + 1).split('/')
     if segments.length is 1
       @children.push(entry)
       true
-    else
-      for child in @children
-        return true if child.add(entry, segments)
-      false
+    else if segments.length > 1
+      name = segments[0]
+      child = _.find @children, (child) -> name is child.getName()
+      unless child?
+        child = new ArchiveEntry("#{@getPath()}/#{name}", 5)
+        @children.push(child)
+      if child.isDirectory()
+        child.add(entry)
+      else
+        false
 
   getPath: -> @path
   getName: -> path.basename(@path)
@@ -35,8 +40,12 @@ convertToTree = (entries) ->
     if segments.length is 1
       rootEntries.push(entry)
     else
-      for rootEntry in rootEntries
-        break if rootEntry.add(entry)
+      name = segments[0]
+      parent = _.find rootEntries, (root) -> name is root.getName()
+      unless parent?
+        parent = new ArchiveEntry(name, 5)
+        rootEntries.push(parent)
+      parent.add(entry)
   rootEntries
 
 wrapCallback = (callback) ->
