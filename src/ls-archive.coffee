@@ -11,10 +11,12 @@ class ArchiveEntry
     return false unless @isParentOf(entry)
 
     segments = entry.getPath().substring(@getPath().length + 1).split('/')
+    return false if segments.length is 0
+
     if segments.length is 1
       @children.push(entry)
       true
-    else if segments.length > 1
+    else
       name = segments[0]
       child = _.find @children, (child) -> name is child.getName()
       unless child?
