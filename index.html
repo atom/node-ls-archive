@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>ls-archive by atom</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>ls-archive</h1>
+        <p>Node module for archive files</p>
+
+        <p class="view"><a href="https://github.com/atom/node-ls-archive">View the Project on GitHub <small>atom/node-ls-archive</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/atom/node-ls-archive/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/atom/node-ls-archive/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/atom/node-ls-archive">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="node-ls-archive-module-" class="anchor" href="#node-ls-archive-module-"><span class="octicon octicon-link"></span></a>Node Ls Archive Module <a href="https://travis-ci.org/atom/node-ls-archive"><img src="https://travis-ci.org/atom/node-ls-archive.png" alt="Build Status"></a>
+</h1>
+
+<p>List or read the files and folders inside archive files.</p>
+
+<p>Supported file extensions:</p>
+
+<ul>
+<li>.jar</li>
+<li>.tar</li>
+<li>.tar.gz</li>
+<li>.tgz</li>
+<li>.zip</li>
+</ul><h2>
+<a name="installing" class="anchor" href="#installing"><span class="octicon octicon-link"></span></a>Installing</h2>
+
+<div class="highlight"><pre>npm install ls-archive
+</pre></div>
+
+<h2>
+<a name="building" class="anchor" href="#building"><span class="octicon octicon-link"></span></a>Building</h2>
+
+<ul>
+<li>Clone the repository</li>
+<li>Run <code>npm install</code>
+</li>
+<li>Run <code>grunt</code> to compile CoffeeScript code</li>
+<li>Run <code>grunt test</code> to run the specs</li>
+</ul><h2>
+<a name="docs" class="anchor" href="#docs"><span class="octicon octicon-link"></span></a>Docs</h2>
+
+<div class="highlight"><pre><span class="nv">archive = </span><span class="nx">require</span> <span class="s">'ls-archive'</span>
+</pre></div>
+
+<h3>
+<a name="archivelistarchivepath-callback" class="anchor" href="#archivelistarchivepath-callback"><span class="octicon octicon-link"></span></a>archive.list(archivePath, callback)</h3>
+
+<p>List the files and folders inside the archive file path. The <code>callback</code> gets
+two arguments <code>(error, archiveEntries)</code>.</p>
+
+<p><code>archivePath</code> - The string path to the archive file.</p>
+
+<p><code>callback</code> - The function to call after reading completes with an error or
+an array of archive entries.</p>
+
+<h3>
+<a name="archivereadarchivepath-filepath-callback" class="anchor" href="#archivereadarchivepath-filepath-callback"><span class="octicon octicon-link"></span></a>archive.read(archivePath, filePath, callback)</h3>
+
+<p>Read the contents of the file path in the archive path and invoke the callback
+with those contents. The <code>callback</code> gets two arguments
+<code>(error, filePathContents)</code>.</p>
+
+<p><code>archivePath</code> - The string path to the archive file.</p>
+
+<p><code>filePath</code> - The string path inside the archive to read.</p>
+
+<p><code>callback</code> - The function to call after reading completes with an error or
+the string contents.</p>
+
+<h3>
+<a name="archivereadgzipgziparchivepath-callback" class="anchor" href="#archivereadgzipgziparchivepath-callback"><span class="octicon octicon-link"></span></a>archive.readGzip(gzipArchivePath, callback)</h3>
+
+<p>Read the contents of the gzipped archive path and invoke the callback with the
+string contents of the uncompressed paths.  The <code>callback</code> gets two arguments
+<code>(error, pathContents)</code>.</p>
+
+<p><code>gzipArchivePath</code> - The string path to the gzipped archive file.</p>
+
+<p><code>callback</code> - The function to call after reading completes with an error or
+the string contents.</p>
+
+<h3>
+<a name="archiveentry" class="anchor" href="#archiveentry"><span class="octicon octicon-link"></span></a>ArchiveEntry</h3>
+
+<p>Class representing a path entry inside an archive file.</p>
+
+<h4>
+<a name="isfile" class="anchor" href="#isfile"><span class="octicon octicon-link"></span></a>.isFile()</h4>
+
+<p>Is the entry a file?</p>
+
+<p>Returns <code>true</code> if a file, <code>false</code> otherwise.</p>
+
+<h4>
+<a name="isfolder" class="anchor" href="#isfolder"><span class="octicon octicon-link"></span></a>.isFolder()</h4>
+
+<p>Is the entry a folder?</p>
+
+<p>Returns <code>true</code> if a folder, <code>false</code> otherwise.</p>
+
+<h4>
+<a name="issymboliclink" class="anchor" href="#issymboliclink"><span class="octicon octicon-link"></span></a>.isSymbolicLink()</h4>
+
+<p>Is the entry a symbolic link?</p>
+
+<p>Returns <code>true</code> if a symbolic link, <code>false</code> otherwise.</p>
+
+<h4>
+<a name="getpath" class="anchor" href="#getpath"><span class="octicon octicon-link"></span></a>.getPath()</h4>
+
+<p>Get the path of this entry.</p>
+
+<p>Returns the string path.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/atom">atom</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
