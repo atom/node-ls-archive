@@ -22,7 +22,7 @@ npm install ls-archive
   * Run `grunt` to compile CoffeeScript code
   * Run `grunt test` to run the specs
 
-## Docs
+## Using
 
 ```coffeescript
 archive = require 'ls-archive'
