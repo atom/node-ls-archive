@@ -69,17 +69,17 @@ Class representing a path entry inside an archive file.
 #### .isFile()
 Is the entry a file?
 
-Returns `true` if a file, `false` otherwise
+Returns `true` if a file, `false` otherwise.
 
 #### .isFolder()
 Is the entry a folder?
 
-Returns `true` if a folder, `false` otherwise
+Returns `true` if a folder, `false` otherwise.
 
 #### .isSymbolicLink()
 Is the entry a symbolic link?
 
-Returns `true` if a symbolic link, `false` otherwise
+Returns `true` if a symbolic link, `false` otherwise.
 
 #### .getPath()
 Get the path of this entry.
