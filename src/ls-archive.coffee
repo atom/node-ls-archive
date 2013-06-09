@@ -8,8 +8,7 @@ class ArchiveEntry
     @children = [] if @isDirectory()
 
   add: (entry) ->
-    return false unless @isDirectory()
-    return false unless entry.getPath().indexOf("#{@getPath()}/") is 0
+    return false unless @isParentOf(entry)
 
     segments = entry.getPath().substring(@getPath().length + 1).split('/')
     if segments.length is 1
@@ -25,6 +24,9 @@ class ArchiveEntry
         child.add(entry)
       else
         false
+
+  isParentOf: (entry) ->
+    @isDirectory() and entry.getPath().indexOf("#{@getPath()}/") is 0
 
   getPath: -> @path
   getName: -> path.basename(@path)
