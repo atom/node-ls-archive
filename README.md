@@ -36,7 +36,7 @@ two arguments `(error, archiveEntries)`.
 `archivePath` - The string path to the archive file.
 
 `callback` - The function to call after reading completes with an error or
-an array of archive entries.
+an array of [ArchiveEntry](#ArchiveEntry) objects.
 
 ### archive.read(archivePath, filePath, callback)
 
