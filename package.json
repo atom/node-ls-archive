@@ -16,7 +16,8 @@
     "unzip",
     "gunzip",
     "archive",
-    "archives"
+    "archives",
+    "uncompress"
   ],
   "author": {
     "name": "Kevin Sawicki",
