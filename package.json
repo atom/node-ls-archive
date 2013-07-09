@@ -47,7 +47,7 @@
   },
   "scripts": {
     "prepublish": "grunt",
-    "test": "jasmine-focused --coffee --captureExceptions spec/"
+    "test": "grunt test"
   },
   "dependencies": {
     "tar": "~0.1.17",
