@@ -4,6 +4,7 @@ List or read the files and folders inside archive files.
 
 Supported file extensions:
 
+  * .epub
   * .jar
   * .tar
   * .tar.gz
