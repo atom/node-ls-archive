@@ -61,26 +61,22 @@ wrapCallback = (callback) ->
       callback(error, data)
 
 listZip = (archivePath, options, callback) ->
-  unzip = require 'unzip'
+  DecompressZip = require 'decompress-zip'
   entries = []
-  fileStream = fs.createReadStream(archivePath)
-  fileStream.on 'error', callback
-  zipStream = fileStream.pipe(unzip.Parse())
-  zipStream.on 'close', ->
+  zipStream = new DecompressZip(archivePath)
+  zipStream.on('error', callback)
+  zipStream.on 'list', (files) ->
+    for file in files
+      if file[-1..] is '/'
+        entryPath = file[0...-1]
+        entryType = 5
+      else
+        entryPath = file
+        entryType = 0
+      entries.push(new ArchiveEntry(entryPath, entryType))
     entries = convertToTree(entries) if options.tree
     callback(null, entries)
-  zipStream.on 'error', callback
-  zipStream.on 'entry', (entry) ->
-    if entry.path[-1..] is '/'
-      entryPath = entry.path[0...-1]
-    else
-      entryPath = entry.path
-    switch entry.type
-      when 'Directory' then entryType = 5
-      when 'File' then entryType = 0
-      else entryType = -1
-    entries.push(new ArchiveEntry(entryPath, entryType))
-    entry.autodrain()
+  zipStream.list()
 
 listGzip = (archivePath, options, callback) ->
   zlib = require 'zlib'
