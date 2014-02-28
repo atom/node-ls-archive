@@ -107,21 +107,33 @@ listTarStream = (inputStream, options, callback) ->
     callback(null, entries)
 
 readFileFromZip = (archivePath, filePath, callback) ->
-  fileStream = fs.createReadStream(archivePath)
-  fileStream.on 'error', callback
-  zipStream = fileStream.pipe(require('unzip').Parse())
-  zipStream.on 'close', ->
-    callback("#{filePath} does not exist in the archive: #{archivePath}")
-  zipStream.on 'error', callback
-  zipStream.on 'entry', (entry) ->
-    if filePath is entry.path
-      if entry.type is 'File'
-        readEntry(entry, callback)
-      else
-        callback("#{filePath} is a folder in the archive: #{archivePath}")
-        entry.autodrain()
-    else
-      entry.autodrain()
+  DecompressZip = require 'decompress-zip'
+  rimraf = require 'rimraf'
+  tmp = require 'tmp'
+
+  tmp.dir (error, tempDir) ->
+    return callback(error) if error
+
+    unzipper = new DecompressZip(archivePath)
+    unzipper.on 'error', callback
+
+    extractedType = null
+    unzipper.on 'extract', ->
+      switch extractedType
+        when 'Directory'
+          callback("#{filePath} is a folder in the archive: #{archivePath}")
+        when 'File'
+          fs.readFile path.join(tempDir, filePath), 'utf8', (error, contents) ->
+            rimraf tempDir, -> # Ignore errors
+            callback(error, contents)
+        else
+          callback("#{filePath} does not exist in the archive: #{archivePath}")
+
+    unzipper.extract
+      path: tempDir
+      filter: (file) ->
+        extractedType = file.type if file.path is filePath
+        file.type is 'File' and file.path is filePath
 
 readFileFromGzip = (archivePath, filePath, callback) ->
   fileStream = fs.createReadStream(archivePath)
