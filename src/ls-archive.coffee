@@ -123,7 +123,7 @@ readFileFromZip = (archivePath, filePath, callback) ->
         when 'Directory'
           callback("#{filePath} is a folder in the archive: #{archivePath}")
         when 'File'
-          fs.readFile path.join(tempDir, filePath), 'utf8', (error, contents) ->
+          fs.readFile path.join(tempDir, filePath), (error, contents) ->
             rimraf tempDir, -> # Ignore errors
             callback(error, contents)
         else
@@ -167,7 +167,7 @@ readFileFromTarStream = (inputStream, archivePath, filePath, callback) ->
 readEntry = (entry, callback) ->
   contents = []
   entry.on 'data', (data) -> contents.push(data)
-  entry.on 'end', -> callback(null, Buffer.concat(contents).toString())
+  entry.on 'end', -> callback(null, Buffer.concat(contents))
 
 isTarPath = (archivePath) ->
   path.extname(archivePath) is '.tar'
@@ -224,4 +224,4 @@ module.exports =
     gzipStream.on 'data', (chunk) ->
       chunks.push(chunk)
     gzipStream.on 'end', ->
-      callback(null, Buffer.concat(chunks).toString())
+      callback(null, Buffer.concat(chunks))

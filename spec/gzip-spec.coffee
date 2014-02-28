@@ -92,7 +92,7 @@ describe "gzipped tar files", ->
         callback = (error, contents) -> pathContents = contents
         archive.readFile(archivePath, 'file.txt', callback)
         waitsFor -> pathContents?
-        runs -> expect(pathContents).toBe 'hello\n'
+        runs -> expect(pathContents.toString()).toBe 'hello\n'
 
       it "calls back with the contents of the given path", ->
         archivePath = path.join(fixturesRoot, 'one-file.tgz')
@@ -100,7 +100,7 @@ describe "gzipped tar files", ->
         callback = (error, contents) -> pathContents = contents
         archive.readFile(archivePath, 'file.txt', callback)
         waitsFor -> pathContents?
-        runs -> expect(pathContents).toBe 'hello\n'
+        runs -> expect(pathContents.toString()).toBe 'hello\n'
 
     describe "when the path does not exist in the archive", ->
       it "calls back with an error", ->
@@ -145,7 +145,7 @@ describe "gzipped tar files", ->
       callback = (error, contents) -> archiveContents = contents
       archive.readGzip(archivePath, callback)
       waitsFor -> archiveContents?
-      runs -> expect(archiveContents).toBe 'hello\n'
+      runs -> expect(archiveContents.toString()).toBe 'hello\n'
 
     describe "when the archive path isn't a valid gzipped tar file", ->
       it "calls back with an error", ->

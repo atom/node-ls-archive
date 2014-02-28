@@ -50,18 +50,18 @@ with those contents. The `callback` gets two arguments
 `filePath` - The string path inside the archive to read.
 
 `callback` - The function to call after reading completes with an error or
-the string contents.
+the Buffer contents.
 
 ### archive.readGzip(gzipArchivePath, callback)
 
 Read the contents of the gzipped archive path and invoke the callback with the
-string contents of the uncompressed paths.  The `callback` gets two arguments
+Buffer contents of the uncompressed paths.  The `callback` gets two arguments
 `(error, pathContents)`.
 
 `gzipArchivePath` - The string path to the gzipped archive file.
 
 `callback` - The function to call after reading completes with an error or
-the string contents.
+the Buffer contents.
 
 ### ArchiveEntry
 

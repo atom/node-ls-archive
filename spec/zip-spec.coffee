@@ -79,7 +79,7 @@ describe "zip files", ->
         callback = (error, contents) -> pathContents = contents
         archive.readFile(archivePath, 'file.txt', callback)
         waitsFor -> pathContents?
-        runs -> expect(pathContents).toBe 'hello\n'
+        runs -> expect(pathContents.toString()).toBe 'hello\n'
 
     describe "when the path does not exist in the archive", ->
       it "calls back with an error", ->
