@@ -6,10 +6,10 @@ Supported file extensions:
 
   * .epub
   * .jar
-  * .war
   * .tar
   * .tar.gz
   * .tgz
+  * .war
   * .zip
 
 ## Installing
