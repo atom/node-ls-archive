@@ -6,6 +6,7 @@ Supported file extensions:
 
   * .epub
   * .jar
+  * .love
   * .tar
   * .tar.gz
   * .tgz
