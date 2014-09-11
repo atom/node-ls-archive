@@ -31,7 +31,7 @@ class ArchiveEntry
     @isDirectory() and entry.getPath().indexOf("#{@getPath()}/") is 0
 
   getPath: -> @path
-  getName: -> path.basename(@path)
+  getName: -> @name ?= path.basename(@path)
   isFile: -> @type is 0
   isDirectory: -> @type is 5
   isSymbolicLink: -> @type is 2
