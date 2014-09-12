@@ -1,7 +1,6 @@
 fs = require 'fs'
 path = require 'path'
 util = require 'util'
-_ = require 'underscore'
 
 class ArchiveEntry
   constructor: (@path, @type) ->
@@ -18,7 +17,7 @@ class ArchiveEntry
       true
     else
       name = segments[0]
-      child = _.find @children, (child) -> name is child.getName()
+      child = findEntryWithName(@children, name)
       unless child?
         child = new ArchiveEntry("#{@getPath()}/#{name}", 5)
         @children.push(child)
@@ -37,6 +36,9 @@ class ArchiveEntry
   isSymbolicLink: -> @type is 2
   toString: -> @getPath()
 
+findEntryWithName = (entries, name) ->
+  return entry for entry in entries when name is entry.getName()
+
 convertToTree = (entries) ->
   rootEntries = []
   for entry in entries
@@ -45,7 +47,7 @@ convertToTree = (entries) ->
       rootEntries.push(entry)
     else
       name = segments[0]
-      parent = _.find rootEntries, (root) -> name is root.getName()
+      parent = findEntryWithName(rootEntries, name)
       unless parent?
         parent = new ArchiveEntry(name, 5)
         rootEntries.push(parent)
@@ -186,7 +188,7 @@ module.exports =
     isTarPath(archivePath) or isZipPath(archivePath) or isGzipPath(archivePath)
 
   list: (archivePath, options={}, callback) ->
-    if _.isFunction(options)
+    if typeof options is 'function'
       callback = options
       options = {}
 
