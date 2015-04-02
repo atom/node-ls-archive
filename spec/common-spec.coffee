@@ -25,12 +25,16 @@ describe "Common behavior", ->
 
   describe ".isPathSupported()", ->
     it "returns true for supported path extensions", ->
+      expect(archive.isPathSupported('/a.epub')).toBe true
       expect(archive.isPathSupported('/a.zip')).toBe true
       expect(archive.isPathSupported('/a.jar')).toBe true
       expect(archive.isPathSupported('/a.war')).toBe true
       expect(archive.isPathSupported('/a.tar')).toBe true
       expect(archive.isPathSupported('/a.tgz')).toBe true
       expect(archive.isPathSupported('/a.tar.gz')).toBe true
+      expect(archive.isPathSupported('/a.whl')).toBe true
+      expect(archive.isPathSupported('/a.egg')).toBe true
+      expect(archive.isPathSupported('/a.xpi')).toBe true
       expect(archive.isPathSupported('/a.bar.gz')).toBe false
       expect(archive.isPathSupported('/a.txt')).toBe false
       expect(archive.isPathSupported('/')).toBe false
