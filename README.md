@@ -12,6 +12,9 @@ Supported file extensions:
   * .tgz
   * .war
   * .zip
+  * .egg
+  * .whl
+  * .xpi
 
 ## Installing
 
