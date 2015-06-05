@@ -98,11 +98,12 @@ listTarStream = (inputStream, options, callback) ->
   tarStream = inputStream.pipe(require('tar').Parse())
   tarStream.on 'error', callback
   tarStream.on 'entry', (entry) ->
-    if entry.props.path[-1..] is path.sep
+    if entry.props.path[-1..] is '/'
       entryPath = entry.props.path[0...-1]
     else
       entryPath = entry.props.path
     entryType = parseInt(entry.props.type)
+    entryPath = entryPath.replace(/\//g, path.sep)
     entries.push(new ArchiveEntry(entryPath, entryType))
   tarStream.on 'end', ->
     entries = convertToTree(entries) if options.tree
@@ -159,7 +160,7 @@ readFileFromTarStream = (inputStream, archivePath, filePath, callback) ->
 
   tarStream.on 'error', callback
   tarStream.on 'entry', (entry) ->
-    return unless filePath is entry.props.path
+    return unless filePath is entry.props.path.replace(/\//g, path.sep)
 
     if entry.props.type is '0'
       readEntry(entry, callback)
