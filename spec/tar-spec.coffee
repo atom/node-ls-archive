@@ -46,21 +46,21 @@ describe "tar files", ->
               expect(tree[0].getPath()).toBe 'package'
               expect(tree[0].children.length).toBe 5
               expect(tree[0].children[0].getName()).toBe 'package.json'
-              expect(tree[0].children[0].getPath()).toBe 'package/package.json'
+              expect(tree[0].children[0].getPath()).toBe path.join('package', 'package.json')
               expect(tree[0].children[1].getName()).toBe 'README.md'
-              expect(tree[0].children[1].getPath()).toBe 'package/README.md'
+              expect(tree[0].children[1].getPath()).toBe path.join('package', 'README.md')
               expect(tree[0].children[2].getName()).toBe 'LICENSE.md'
-              expect(tree[0].children[2].getPath()).toBe 'package/LICENSE.md'
+              expect(tree[0].children[2].getPath()).toBe path.join('package', 'LICENSE.md')
               expect(tree[0].children[3].getName()).toBe 'bin'
-              expect(tree[0].children[3].getPath()).toBe 'package/bin'
+              expect(tree[0].children[3].getPath()).toBe path.join('package', 'bin')
               expect(tree[0].children[4].children[0].getName()).toBe 'lister.js'
-              expect(tree[0].children[4].children[0].getPath()).toBe 'package/lib/lister.js'
+              expect(tree[0].children[4].children[0].getPath()).toBe path.join('package', 'lib', 'lister.js')
               expect(tree[0].children[4].children[1].getName()).toBe 'ls-archive-cli.js'
-              expect(tree[0].children[4].children[1].getPath()).toBe 'package/lib/ls-archive-cli.js'
+              expect(tree[0].children[4].children[1].getPath()).toBe path.join('package', 'lib', 'ls-archive-cli.js')
               expect(tree[0].children[4].children[2].getName()).toBe 'ls-archive.js'
-              expect(tree[0].children[4].children[2].getPath()).toBe 'package/lib/ls-archive.js'
+              expect(tree[0].children[4].children[2].getPath()).toBe path.join('package', 'lib', 'ls-archive.js')
               expect(tree[0].children[4].children[3].getName()).toBe 'reader.js'
-              expect(tree[0].children[4].children[3].getPath()).toBe 'package/lib/reader.js'
+              expect(tree[0].children[4].children[3].getPath()).toBe path.join('package', 'lib', 'reader.js')
 
         describe "when the archive has multiple directories at the root", ->
           it "returns archive entries nested under their parent directory", ->
@@ -142,6 +142,6 @@ describe "tar files", ->
         archivePath = path.join(fixturesRoot, 'one-folder.tar')
         pathError = null
         callback = (error, contents) -> pathError = error
-        archive.readFile(archivePath, 'folder/', callback)
+        archive.readFile(archivePath, "folder#{path.sep}", callback)
         waitsFor -> pathError?
         runs -> expect(pathError.message.length).toBeGreaterThan 0
