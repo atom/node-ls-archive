@@ -113,6 +113,6 @@ describe "zip files", ->
         archivePath = path.join(fixturesRoot, 'one-folder.zip')
         pathError = null
         callback = (error, contents) -> pathError = error
-        archive.readFile(archivePath, 'folder/', callback)
+        archive.readFile(archivePath, "folder#{path.sep}", callback)
         waitsFor -> pathError?
         runs -> expect(pathError.message.length).toBeGreaterThan 0

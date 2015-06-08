@@ -9,7 +9,7 @@ class ArchiveEntry
   add: (entry) ->
     return false unless @isParentOf(entry)
 
-    segments = entry.getPath().substring(@getPath().length + 1).split('/')
+    segments = entry.getPath().substring(@getPath().length + 1).split(path.sep)
     return false if segments.length is 0
 
     if segments.length is 1
@@ -19,7 +19,7 @@ class ArchiveEntry
       name = segments[0]
       child = findEntryWithName(@children, name)
       unless child?
-        child = new ArchiveEntry("#{@getPath()}/#{name}", 5)
+        child = new ArchiveEntry("#{@getPath()}#{path.sep}#{name}", 5)
         @children.push(child)
       if child.isDirectory()
         child.add(entry)
@@ -27,7 +27,7 @@ class ArchiveEntry
         false
 
   isParentOf: (entry) ->
-    @isDirectory() and entry.getPath().indexOf("#{@getPath()}/") is 0
+    @isDirectory() and entry.getPath().indexOf("#{@getPath()}#{path.sep}") is 0
 
   getPath: -> @path
   getName: -> @name ?= path.basename(@path)
@@ -42,7 +42,7 @@ findEntryWithName = (entries, name) ->
 convertToTree = (entries) ->
   rootEntries = []
   for entry in entries
-    segments = entry.getPath().split('/')
+    segments = entry.getPath().split(path.sep)
     if segments.length is 1
       rootEntries.push(entry)
     else
@@ -69,7 +69,7 @@ listZip = (archivePath, options, callback) ->
   zipStream.on('error', callback)
   zipStream.on 'list', (files) ->
     for file in files
-      if file[-1..] is '/'
+      if file[-1..] is path.sep
         entryPath = file[0...-1]
         entryType = 5
       else
@@ -103,6 +103,7 @@ listTarStream = (inputStream, options, callback) ->
     else
       entryPath = entry.props.path
     entryType = parseInt(entry.props.type)
+    entryPath = entryPath.replace(/\//g, path.sep)
     entries.push(new ArchiveEntry(entryPath, entryType))
   tarStream.on 'end', ->
     entries = convertToTree(entries) if options.tree
@@ -159,7 +160,7 @@ readFileFromTarStream = (inputStream, archivePath, filePath, callback) ->
 
   tarStream.on 'error', callback
   tarStream.on 'entry', (entry) ->
-    return unless filePath is entry.props.path
+    return unless filePath is entry.props.path.replace(/\//g, path.sep)
 
     if entry.props.type is '0'
       readEntry(entry, callback)
