@@ -148,7 +148,7 @@ readFileFromGzip = (archivePath, filePath, callback) ->
   readFileFromTarStream(gzipStream, archivePath, filePath, callback)
 
 readFileFromTar = (archivePath, filePath, callback) ->
-  fileStream = fs.createReadStream(archivePath, callback)
+  fileStream = fs.createReadStream(archivePath)
   fileStream.on 'error', callback
   fileStream.on 'end', ->
     callback("#{filePath} does not exist in the archive: #{archivePath}")
