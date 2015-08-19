@@ -15,6 +15,7 @@ Supported file extensions:
   * .egg
   * .whl
   * .xpi
+  * .nupkg
 
 ## Installing
 

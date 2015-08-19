@@ -177,7 +177,7 @@ isTarPath = (archivePath) ->
 
 isZipPath = (archivePath) ->
   extension = path.extname(archivePath)
-  extension in ['.epub', '.jar', '.love', '.war', '.zip', '.egg', '.whl', '.xpi']
+  extension in ['.epub', '.jar', '.love', '.war', '.zip', '.egg', '.whl', '.xpi', '.nupkg']
 
 isGzipPath = (archivePath) ->
   path.extname(archivePath) is '.tgz' or
