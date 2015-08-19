@@ -124,7 +124,7 @@ describe "zip files", ->
         archive.list(path.join(fixturesRoot, 'word.docx'), forceZip: true, callback)
         waitsFor -> zipPaths?
         runs ->
-          expect(zipPaths.length).toBe 1
+          expect(zipPaths.length).toBe 13
           expect(zipPaths[0].path).toBe '[Content_Types].xml'
           expect(zipPaths[0].isDirectory()).toBe false
           expect(zipPaths[0].isFile()).toBe true
