@@ -36,6 +36,7 @@ describe "Common behavior", ->
       expect(archive.isPathSupported("#{path.sep}a.whl")).toBe true
       expect(archive.isPathSupported("#{path.sep}a.egg")).toBe true
       expect(archive.isPathSupported("#{path.sep}a.xpi")).toBe true
+      expect(archive.isPathSupported("#{path.sep}a.nupkg")).toBe true
       expect(archive.isPathSupported("#{path.sep}a.bar.gz")).toBe false
       expect(archive.isPathSupported("#{path.sep}a.txt")).toBe false
       expect(archive.isPathSupported("#{path.sep}")).toBe false
