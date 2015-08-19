@@ -7,6 +7,7 @@ Supported file extensions:
   * .epub
   * .jar
   * .love
+  * .nupkg
   * .tar
   * .tar.gz
   * .tgz
@@ -15,7 +16,6 @@ Supported file extensions:
   * .egg
   * .whl
   * .xpi
-  * .nupkg
 
 ## Installing
 
