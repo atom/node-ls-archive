@@ -116,3 +116,16 @@ describe "zip files", ->
         archive.readFile(archivePath, "folder#{path.sep}", callback)
         waitsFor -> pathError?
         runs -> expect(pathError.message.length).toBeGreaterThan 0
+
+    describe "when the forceZip option is enabled", ->
+      it "returns files and folders in the docx archive", ->
+        zipPaths = null
+        callback = (error, paths) -> zipPaths = paths
+        archive.list(path.join(fixturesRoot, 'word.docx'), forceZip: true, callback)
+        waitsFor -> zipPaths?
+        runs ->
+          expect(zipPaths.length).toBe 1
+          expect(zipPaths[0].path).toBe '[Content_Types].xml'
+          expect(zipPaths[0].isDirectory()).toBe false
+          expect(zipPaths[0].isFile()).toBe true
+          expect(zipPaths[0].isSymbolicLink()).toBe false

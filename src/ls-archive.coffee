@@ -197,7 +197,7 @@ module.exports =
       listTar(archivePath, options, wrapCallback(callback))
     else if isGzipPath(archivePath)
       listGzip(archivePath, options, wrapCallback(callback))
-    else if isZipPath(archivePath)
+    else if isZipPath(archivePath) or options.forceZip
       listZip(archivePath, options, wrapCallback(callback))
     else
       callback(new Error("'#{path.extname(archivePath)}' files are not supported"))
