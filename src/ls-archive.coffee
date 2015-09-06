@@ -186,7 +186,7 @@ isGzipPath = (archivePath, extensions) ->
 module.exports =
 
   extensions:
-    zip: ['.epub', '.jar', '.love', '.war', '.zip', '.egg', '.whl', '.xpi']
+    zip: ['.epub', '.jar', '.love', '.war', '.zip', '.egg', '.whl', '.xpi', '.nupkg']
     tar: ['.tar']
     gzip: ['.tgz']
 
