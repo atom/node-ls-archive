@@ -7,7 +7,6 @@ notifications:
 
 node_js:
   - 0.10
-  - 0.11
 
 branches:
   only:
