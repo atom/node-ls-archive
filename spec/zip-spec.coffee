@@ -71,6 +71,20 @@ describe "zip files", ->
         waitsFor -> pathError?
         runs -> expect(pathError.message.length).toBeGreaterThan 0
 
+    describe "listing when custom extensions are added", ->
+      it "lists files and folders in the docx archive", ->
+        zipPaths = null
+        callback = (error, paths) -> zipPaths = paths
+        archive.configureExtensions(zip: ['.docx'])
+        archive.list(path.join(fixturesRoot, 'word.docx'), forceZip: true, callback)
+        waitsFor -> zipPaths?
+        runs ->
+          expect(zipPaths.length).toBe 13
+          expect(zipPaths[0].path).toBe '[Content_Types].xml'
+          expect(zipPaths[0].isDirectory()).toBe false
+          expect(zipPaths[0].isFile()).toBe true
+          expect(zipPaths[0].isSymbolicLink()).toBe false
+
   describe ".readFile()", ->
     describe "when the path exists in the archive", ->
       it "calls back with the contents of the given path", ->
@@ -117,15 +131,13 @@ describe "zip files", ->
         waitsFor -> pathError?
         runs -> expect(pathError.message.length).toBeGreaterThan 0
 
-    describe "when the forceZip option is enabled", ->
-      it "returns files and folders in the docx archive", ->
-        zipPaths = null
-        callback = (error, paths) -> zipPaths = paths
-        archive.list(path.join(fixturesRoot, 'word.docx'), forceZip: true, callback)
-        waitsFor -> zipPaths?
-        runs ->
-          expect(zipPaths.length).toBe 13
-          expect(zipPaths[0].path).toBe '[Content_Types].xml'
-          expect(zipPaths[0].isDirectory()).toBe false
-          expect(zipPaths[0].isFile()).toBe true
-          expect(zipPaths[0].isSymbolicLink()).toBe false
+    describe "reading when custom extensions are added", ->
+      it "calls back with the contents of the given path", ->
+        archivePath = path.join(fixturesRoot, 'one-file.customZip')
+        pathContents = null
+        callback = (error, contents) -> pathContents = contents
+        archive.configureExtensions(zip: ['.customZip'])
+        archive.readFile(archivePath, 'file.txt', callback)
+        waitsFor -> pathContents?
+        runs -> expect(pathContents.toString()).toBe 'hello\n'
+

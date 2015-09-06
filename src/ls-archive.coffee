@@ -172,43 +172,54 @@ readEntry = (entry, callback) ->
   entry.on 'data', (data) -> contents.push(data)
   entry.on 'end', -> callback(null, Buffer.concat(contents))
 
-isTarPath = (archivePath) ->
-  path.extname(archivePath) is '.tar'
+isTarPath = (archivePath, extensions) ->
+  path.extname(archivePath) in extensions
 
-isZipPath = (archivePath) ->
+isZipPath = (archivePath, extensions) ->
   extension = path.extname(archivePath)
-  extension in ['.epub', '.jar', '.love', '.war', '.zip', '.egg', '.whl', '.xpi']
+  extension in extensions
 
-isGzipPath = (archivePath) ->
-  path.extname(archivePath) is '.tgz' or
-    path.extname(path.basename(archivePath, '.gz')) is '.tar'
+isGzipPath = (archivePath, extensions) ->
+  path.extname(archivePath) in extensions.gzip or
+    path.extname(path.basename(archivePath, '.gz')) in extensions.tar
 
 module.exports =
+
+  extensions:
+    zip: ['.epub', '.jar', '.love', '.war', '.zip', '.egg', '.whl', '.xpi']
+    tar: ['.tar']
+    gzip: ['.tgz']
+
+  configureExtensions: (addlExtensions) ->
+    @extensions.zip.push(addlExtensions.zip...)
+    @extensions.tar.push(addlExtensions.tar...)
+    @extensions.gzip.push(addlExtensions.gzip...)
+
   isPathSupported: (archivePath) ->
     return false unless archivePath
-    isTarPath(archivePath) or isZipPath(archivePath) or isGzipPath(archivePath)
+    isTarPath(archivePath, @extensions.tar) or isZipPath(archivePath, @extensions.zip) or isGzipPath(archivePath, @extensions)
 
   list: (archivePath, options={}, callback) ->
     if typeof options is 'function'
       callback = options
       options = {}
 
-    if isTarPath(archivePath)
+    if isTarPath(archivePath, @extensions.tar)
       listTar(archivePath, options, wrapCallback(callback))
-    else if isGzipPath(archivePath)
+    else if isGzipPath(archivePath, @extensions)
       listGzip(archivePath, options, wrapCallback(callback))
-    else if isZipPath(archivePath) or options.forceZip
+    else if isZipPath(archivePath, @extensions.zip)
       listZip(archivePath, options, wrapCallback(callback))
     else
       callback(new Error("'#{path.extname(archivePath)}' files are not supported"))
     undefined
 
   readFile: (archivePath, filePath, callback) ->
-    if isTarPath(archivePath)
+    if isTarPath(archivePath, @extensions.tar)
       readFileFromTar(archivePath, filePath, wrapCallback(callback))
-    else if isGzipPath(archivePath)
+    else if isGzipPath(archivePath, @extensions)
       readFileFromGzip(archivePath, filePath, wrapCallback(callback))
-    else if isZipPath(archivePath)
+    else if isZipPath(archivePath, @extensions.zip)
       readFileFromZip(archivePath, filePath, wrapCallback(callback))
     else
       callback(new Error("'#{path.extname(archivePath)}' files are not supported"))
