@@ -50,7 +50,7 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "tar": "~0.1.17",
+    "tar": "^2.2.1",
     "optimist": "~0.5.2",
     "async": "~0.2.9",
     "colors": "~0.6.2",
