@@ -1,7 +1,7 @@
 {
   "name": "ls-archive",
   "description": "A package for listing and reading files in archive files",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "licenses": [
     {
       "type": "MIT",
