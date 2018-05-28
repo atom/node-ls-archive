@@ -69,6 +69,14 @@ Buffer contents of the uncompressed paths.  The `callback` gets two arguments
 `callback` - The function to call after reading completes with an error or
 the Buffer contents.
 
+### archive.configureExtensions(additionalExtensions)
+
+Adds custom file extensions to zip, tar, and/or gzip handling to support archives with atypical extensions.
+
+`additionalExtensions` - Object literal with string arrays for zip, tar, and gzip
+
+Example: `archive.configureExtensions(zip: ['.docx'])`
+
 ### ArchiveEntry
 
 Class representing a path entry inside an archive file.
