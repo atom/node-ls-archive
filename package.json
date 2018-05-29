@@ -53,8 +53,7 @@
     "optimist": "~0.5.2",
     "async": "~0.2.9",
     "colors": "~0.6.2",
-    "decompress-zip": "0.3.1",
     "rimraf": "~2.2.6",
-    "tmp": "^0.0.31"
+    "yauzl": "^2.9.1"
   }
 }
