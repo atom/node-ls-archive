@@ -36,13 +36,13 @@
     "lsa": "./bin/lsa"
   },
   "devDependencies": {
-    "grunt": "~0.4.0",
-    "grunt-contrib-coffee": "~0.9.0",
-    "coffeescript": "~1.7.0",
-    "grunt-cli": "~0.1.6",
-    "grunt-shell": "~0.2.2",
-    "jasmine-focused": "1.x",
-    "grunt-coffeelint": "0.0.6"
+    "coffeescript": "^1.12.7",
+    "grunt": "^1.0.2",
+    "grunt-cli": "^1.2.0",
+    "grunt-coffeelint": "0.0.16",
+    "grunt-contrib-coffee": "^2.0.0",
+    "grunt-shell": "^2.1.0",
+    "jasmine-focused": "^1.0.7"
   },
   "scripts": {
     "prepublish": "grunt",
