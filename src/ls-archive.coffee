@@ -63,22 +63,24 @@ wrapCallback = (callback) ->
       callback(error, data)
 
 listZip = (archivePath, options, callback) ->
-  DecompressZip = require 'decompress-zip'
+  yauzl = require 'yauzl'
   entries = []
-  zipStream = new DecompressZip(archivePath)
-  zipStream.on('error', callback)
-  zipStream.on 'list', (files) ->
-    for file in files
-      if file[-1..] is path.sep
-        entryPath = file[0...-1]
+  yauzl.open archivePath, {lazyEntries: true}, (error, zipFile) ->
+    return callback(error) if error
+    zipFile.readEntry()
+    zipFile.on 'error', callback
+    zipFile.on 'entry', (entry) ->
+      if entry.fileName[-1..] is path.sep
+        entryPath = entry.fileName[0...-1]
         entryType = 5
       else
-        entryPath = file
+        entryPath = entry.fileName
         entryType = 0
       entries.push(new ArchiveEntry(entryPath, entryType))
-    entries = convertToTree(entries) if options.tree
-    callback(null, entries)
-  zipStream.list()
+      zipFile.readEntry()
+    zipFile.on 'end', ->
+      entries = convertToTree(entries) if options.tree
+      callback(null, entries)
 
 listGzip = (archivePath, options, callback) ->
   zlib = require 'zlib'
@@ -110,33 +112,22 @@ listTarStream = (inputStream, options, callback) ->
     callback(null, entries)
 
 readFileFromZip = (archivePath, filePath, callback) ->
-  DecompressZip = require 'decompress-zip'
-  rimraf = require 'rimraf'
-  tmp = require 'tmp'
-
-  tmp.dir (error, tempDir) ->
+  yauzl = require 'yauzl'
+  yauzl.open archivePath, {lazyEntries: true}, (error, zipFile) ->
     return callback(error) if error
+    zipFile.readEntry()
+    zipFile.on 'error', callback
+    zipFile.on 'end', ->
+      callback("#{filePath} does not exist in the archive: #{archivePath}")
+    zipFile.on 'entry', (entry) ->
+      return zipFile.readEntry() unless filePath is entry.fileName.replace(/\//g, path.sep)
 
-    unzipper = new DecompressZip(archivePath)
-    unzipper.on 'error', callback
-
-    extractedType = null
-    unzipper.on 'extract', ->
-      switch extractedType
-        when 'Directory'
-          callback("#{filePath} is a folder in the archive: #{archivePath}")
-        when 'File'
-          fs.readFile path.join(tempDir, filePath), (error, contents) ->
-            rimraf tempDir, -> # Ignore errors
-            callback(error, contents)
-        else
-          callback("#{filePath} does not exist in the archive: #{archivePath}")
-
-    unzipper.extract
-      path: tempDir
-      filter: (file) ->
-        extractedType = file.type if file.path is filePath
-        file.type is 'File' and file.path is filePath
+      if entry.fileName[-1..] isnt path.sep
+        zipFile.openReadStream entry, (error, entryStream) ->
+          return callback(error) if error
+          readEntry(entryStream, callback)
+      else
+        callback("#{filePath} is not a normal file in the archive: #{archivePath}")
 
 readFileFromGzip = (archivePath, filePath, callback) ->
   fileStream = fs.createReadStream(archivePath)

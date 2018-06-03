@@ -116,3 +116,12 @@ describe "zip files", ->
         archive.readFile(archivePath, "folder#{path.sep}", callback)
         waitsFor -> pathError?
         runs -> expect(pathError.message.length).toBeGreaterThan 0
+
+    describe "when the archive contains nested directories", ->
+      it "calls back with the contents of the given path", ->
+        archivePath = path.join(fixturesRoot, 'nested.zip')
+        pathContents = null
+        callback = (error, contents) -> pathContents = contents
+        archive.readFile(archivePath, 'd1/d2/f1.txt', callback)
+        waitsFor -> pathContents?
+        runs -> expect(pathContents.toString()).toBe ''
