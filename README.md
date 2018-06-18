@@ -45,7 +45,7 @@ two arguments `(error, archiveEntries)`.
 `callback` - The function to call after reading completes with an error or
 an array of [ArchiveEntry](#archiveentry) objects.
 
-### archive.read(archivePath, filePath, callback)
+### archive.readFile(archivePath, filePath, callback)
 
 Read the contents of the file path in the archive path and invoke the callback
 with those contents. The `callback` gets two arguments
