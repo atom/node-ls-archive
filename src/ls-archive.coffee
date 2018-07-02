@@ -76,6 +76,7 @@ listZip = (archivePath, options, callback) ->
       else
         entryPath = entry.fileName
         entryType = 0
+      entryPath = entryPath.replace(/\//g, path.sep)
       entries.push(new ArchiveEntry(entryPath, entryType))
       zipFile.readEntry()
     zipFile.on 'end', ->
