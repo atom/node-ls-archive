@@ -123,7 +123,7 @@ readFileFromZip = (archivePath, filePath, callback) ->
     zipFile.on 'entry', (entry) ->
       return zipFile.readEntry() unless filePath is entry.fileName.replace(/\//g, path.sep)
 
-      if entry.fileName[-1..] isnt path.sep
+      if filePath[-1..] isnt path.sep
         zipFile.openReadStream entry, (error, entryStream) ->
           return callback(error) if error
           readEntry(entryStream, callback)
