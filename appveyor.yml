@@ -7,6 +7,10 @@ platform:
 cache:
   - node_modules
 
+branches:
+  only:
+    - /master|^v\d+\.\d+\.\d+$/
+
 install:
   - ps: Install-Product node 8 x64
   - npm install
