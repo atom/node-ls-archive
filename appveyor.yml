@@ -1,0 +1,23 @@
+version: "{build}"
+
+image: Visual Studio 2017
+platform:
+  - x64
+
+cache:
+  - node_modules
+
+branches:
+  only:
+    - /master|^v\d+\.\d+\.\d+$/
+
+install:
+  - ps: Install-Product node 8 x64
+  - npm install
+
+test_script:
+  - node --version
+  - npm --version
+  - npm test
+
+build: off
