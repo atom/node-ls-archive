@@ -70,7 +70,7 @@ listZip = (archivePath, options, callback) ->
     zipFile.readEntry()
     zipFile.on 'error', callback
     zipFile.on 'entry', (entry) ->
-      if entry.fileName[-1..] is path.sep
+      if entry.fileName[-1..] is '/'
         entryPath = entry.fileName[0...-1]
         entryType = 5
       else
