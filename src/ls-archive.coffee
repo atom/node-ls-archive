@@ -70,12 +70,13 @@ listZip = (archivePath, options, callback) ->
     zipFile.readEntry()
     zipFile.on 'error', callback
     zipFile.on 'entry', (entry) ->
-      if entry.fileName[-1..] is path.sep
+      if entry.fileName[-1..] is '/'
         entryPath = entry.fileName[0...-1]
         entryType = 5
       else
         entryPath = entry.fileName
         entryType = 0
+      entryPath = entryPath.replace(/\//g, path.sep)
       entries.push(new ArchiveEntry(entryPath, entryType))
       zipFile.readEntry()
     zipFile.on 'end', ->
@@ -122,7 +123,7 @@ readFileFromZip = (archivePath, filePath, callback) ->
     zipFile.on 'entry', (entry) ->
       return zipFile.readEntry() unless filePath is entry.fileName.replace(/\//g, path.sep)
 
-      if entry.fileName[-1..] isnt path.sep
+      if filePath[-1..] isnt path.sep
         zipFile.openReadStream entry, (error, entryStream) ->
           return callback(error) if error
           readEntry(entryStream, callback)

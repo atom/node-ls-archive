@@ -122,6 +122,6 @@ describe "zip files", ->
         archivePath = path.join(fixturesRoot, 'nested.zip')
         pathContents = null
         callback = (error, contents) -> pathContents = contents
-        archive.readFile(archivePath, 'd1/d2/f1.txt', callback)
+        archive.readFile(archivePath, "d1#{path.sep}d2#{path.sep}f1.txt", callback)
         waitsFor -> pathContents?
         runs -> expect(pathContents.toString()).toBe ''
