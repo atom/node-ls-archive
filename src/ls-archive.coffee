@@ -91,6 +91,14 @@ listGzip = (archivePath, options, callback) ->
   gzipStream.on 'error', callback
   listTarStream(gzipStream, options, callback)
 
+listBzip = (archivePath, options, callback) ->
+  bzip = require 'unbzip2-stream'
+  fileStream = fs.createReadStream(archivePath)
+  fileStream.on 'error', callback
+  bzipStream = fileStream.pipe(bzip())
+  bzipStream.on 'error', callback
+  listTarStream(bzipStream, options, callback)
+
 listTar = (archivePath, options, callback) ->
   fileStream = fs.createReadStream(archivePath)
   fileStream.on 'error', callback
@@ -139,6 +147,15 @@ readFileFromGzip = (archivePath, filePath, callback) ->
     callback("#{filePath} does not exist in the archive: #{archivePath}")
   readFileFromTarStream(gzipStream, archivePath, filePath, callback)
 
+readFileFromBzip = (archivePath, filePath, callback) ->
+  fileStream = fs.createReadStream(archivePath)
+  fileStream.on 'error', callback
+  bzipStream = fileStream.pipe(require('unbzip2-stream')())
+  bzipStream.on 'error', callback
+  bzipStream.on 'end', ->
+    callback("#{filePath} does not exist in the archive: #{archivePath}")
+  readFileFromTarStream(bzipStream, archivePath, filePath, callback)
+
 readFileFromTar = (archivePath, filePath, callback) ->
   fileStream = fs.createReadStream(archivePath)
   fileStream.on 'error', callback
@@ -175,10 +192,18 @@ isGzipPath = (archivePath) ->
   path.extname(archivePath) is '.tgz' or
     path.extname(path.basename(archivePath, '.gz')) is '.tar'
 
+isBzipPath = (archivePath) ->
+  path.extname(archivePath) is '.tbz' or
+    path.extname(archivePath) is '.tbz2' or
+      path.extname(path.basename(archivePath, '.bz2')) is '.tar'
+
 module.exports =
   isPathSupported: (archivePath) ->
     return false unless archivePath
-    isTarPath(archivePath) or isZipPath(archivePath) or isGzipPath(archivePath)
+    isTarPath(archivePath) or
+      isZipPath(archivePath) or
+        isGzipPath(archivePath) or
+          isBzipPath(archivePath)
 
   list: (archivePath, options={}, callback) ->
     if typeof options is 'function'
@@ -189,6 +214,8 @@ module.exports =
       listTar(archivePath, options, wrapCallback(callback))
     else if isGzipPath(archivePath)
       listGzip(archivePath, options, wrapCallback(callback))
+    else if isBzipPath(archivePath)
+      listBzip(archivePath, options, wrapCallback(callback))
     else if isZipPath(archivePath)
       listZip(archivePath, options, wrapCallback(callback))
     else
@@ -200,6 +227,8 @@ module.exports =
       readFileFromTar(archivePath, filePath, wrapCallback(callback))
     else if isGzipPath(archivePath)
       readFileFromGzip(archivePath, filePath, wrapCallback(callback))
+    else if isBzipPath(archivePath)
+      readFileFromBzip(archivePath, filePath, wrapCallback(callback))
     else if isZipPath(archivePath)
       readFileFromZip(archivePath, filePath, wrapCallback(callback))
     else
@@ -219,4 +248,19 @@ module.exports =
     gzipStream.on 'data', (chunk) ->
       chunks.push(chunk)
     gzipStream.on 'end', ->
+      callback(null, Buffer.concat(chunks))
+  
+  readBzip: (bzipArchivePath, callback) ->
+    callback = wrapCallback(callback)
+    
+    bzip = require 'unbzip2-stream'
+    fileStream = fs.createReadStream(bzipArchivePath)
+    fileStream.on 'error', callback
+    bzipStream = fileStream.pipe(bzip())
+    bzipStream.on 'error', callback
+    
+    chunks = []
+    bzipStream.on 'data', (chunk) ->
+      chunks.push(chunk)
+    bzipStream.on 'end', ->
       callback(null, Buffer.concat(chunks))

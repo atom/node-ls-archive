@@ -11,6 +11,9 @@ Supported file extensions:
   * .tar
   * .tar.gz
   * .tgz
+  * .tar.bz2
+  * .tbz
+  * .tbz2
   * .war
   * .zip
   * .egg
@@ -65,6 +68,17 @@ Buffer contents of the uncompressed paths.  The `callback` gets two arguments
 `(error, pathContents)`.
 
 `gzipArchivePath` - The string path to the gzipped archive file.
+
+`callback` - The function to call after reading completes with an error or
+the Buffer contents.
+
+### archive.readBzip(bzipArchivePath, callback)
+
+Read the contents of the bzipped archive path and invoke the callback with the
+Buffer contents of the uncompressed paths.  The `callback` gets two arguments
+`(error, pathContents)`.
+
+`bzipArchivePath` - The string path to the bzipped archive file.
 
 `callback` - The function to call after reading completes with an error or
 the Buffer contents.

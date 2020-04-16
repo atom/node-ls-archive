@@ -10,7 +10,7 @@ module.exports = ->
 
       List the files and folders inside an archive file.
 
-      Supports .zip, .tar, .tar.gz, and .tgz files.
+      Supports .zip, .tar, .tar.gz, .tgz, .tar.bz2, .tbz and .tbz2 files.
     """)
     .describe('colors', 'Enable colored output').default('colors', true).boolean('colors')
     .describe('help', 'Show this message').alias('h', 'help')
