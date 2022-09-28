@@ -1,4 +1,5 @@
-# Node Ls Archive Module [![Build Status](https://travis-ci.org/atom/node-ls-archive.png)](https://travis-ci.org/atom/node-ls-archive)
+##### Atom and all repositories under Atom will be archived on December 15, 2022. Learn more in our [official announcement](https://github.blog/2022-06-08-sunsetting-atom/)
+ # Node Ls Archive Module [![Build Status](https://travis-ci.org/atom/node-ls-archive.png)](https://travis-ci.org/atom/node-ls-archive)
 
 List or read the files and folders inside archive files.
 
